@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.ObjectModel;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -9,6 +10,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using static OrefAlertsService;
 
 namespace MonitorWpf1
 {
@@ -26,12 +28,16 @@ namespace MonitorWpf1
 		private readonly NewsService _newsService = new NewsService();
 		private readonly OrefAlertsService _alertService = new OrefAlertsService();
 
+		public ObservableCollection<AlertGroup> AllAlerts { get; } = new ObservableCollection<AlertGroup>();
+		public ObservableCollection<AlertGroup> FinishedAlerts { get; } = new ObservableCollection<AlertGroup>();
+
 		private DispatcherTimer updateTimer;
 		private DispatcherTimer scrollTimer;
 
 		public MainWindow()
         {
             InitializeComponent();
+			this.DataContext = this;
 
 			// Initialize the news timer
 			timer_news = new DispatcherTimer();
@@ -126,11 +132,36 @@ namespace MonitorWpf1
 			if(alertGroups != null && alertGroups.Count > 0)
 			{
 				LabelNoData.Text = "";
-				AlertsControl.ItemsSource = alertGroups.OrderByDescending(g => g.AlertDate).ToList();
+
+				// Update main alerts
+				var sortedAlerts = alertGroups.OrderByDescending(a => a.AlertDate).ToList();
+
+				AllAlerts.Clear();
+				foreach (var g in sortedAlerts)
+				{
+					AllAlerts.Add(g);
+				}
+				//AlertsControl.ItemsSource = alertGroups.OrderByDescending(g => g.AlertDate).ToList();
+
+
+				// Update finished/go-out alerts (category 13)
+				var sortedReleases = alertGroups.Where(a => a.Category == 13).OrderByDescending(a => a.AlertDate);
+				FinishedAlerts.Clear();
+				foreach (var g in sortedReleases)
+				{
+					FinishedAlerts.Add(g);
+				}
+
+				//ReleaseLocationsControl.ItemsSource = alertGroups
+				//	.Where(g => g.Category == 13)
+				//	.OrderByDescending(g => g.AlertDate)
+				//	.ToList();
 			}
 			else
 			{
 				LabelNoData.Text = "No data.";
+				AllAlerts.Clear();
+				FinishedAlerts.Clear();
 			}
 
 			AlertsLastUpdatedText.Text = $"Last updated: {DateTime.Now:dd/MM/yyyy HH:mm:ss}";
