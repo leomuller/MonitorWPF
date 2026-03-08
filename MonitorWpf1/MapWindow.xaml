@@ -1,0 +1,17 @@
+﻿<Window x:Class="MonitorWpf1.MapWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Image" Height="400" Width="600"
+		WindowState="Maximized">
+
+
+
+	<Border Padding="20" Background="Black">
+		<Grid>
+			<!-- Map image -->
+			<Image x:Name="MapImage" Source="/Resources/mapsisrael.jpg" Stretch="Uniform"/>
+			
+		</Grid>
+	</Border>
+
+</Window>

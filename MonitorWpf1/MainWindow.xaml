@@ -5,139 +5,183 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MonitorWpf1"
         mc:Ignorable="d"
-		WindowState="Maximized"
+        WindowState="Maximized"
         WindowStyle="SingleBorderWindow"
         Title="Monitor"
-		Topmost="False"
-		Background="Black"
-		>
+        Topmost="False"
+        Background="Black">
+
 	<Grid>
+		<!-- ===== Top-level rows ===== -->
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<!-- Menu -->
+			<RowDefinition Height="*"/>
+			<!-- Main content -->
+		</Grid.RowDefinitions>
 
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="*"/>
-			<ColumnDefinition Width="400"/>
-		</Grid.ColumnDefinitions>
+		<!-- ===== Menu ===== -->
+		<Menu Grid.Row="0" Background="#333" Foreground="White">
+			<!-- Top-level menu items style -->
+			<Menu.Resources>
+				<Style TargetType="MenuItem" x:Key="TopMenuStyle">
+					<Setter Property="Background" Value="#333"/>
+					<Setter Property="Foreground" Value="White"/>
+					<Setter Property="Padding" Value="6,2"/>
+					<Setter Property="BorderThickness" Value="0"/>
+					<Style.Triggers>
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter Property="Background" Value="#555"/>
+						</Trigger>
+					</Style.Triggers>
+				</Style>
 
-		<Border Grid.Column="1" BorderBrush="DarkGray" BorderThickness="1" Margin="5" Padding="8" CornerRadius="12"  Background="SlateGray">
+				<!-- Submenu items style -->
+				<Style TargetType="MenuItem" x:Key="SubMenuStyle">
+					<Setter Property="Background" Value="Transparent"/>
+					<Setter Property="Foreground" Value="Black"/>
+					<Setter Property="Padding" Value="6,2"/>
+					<Setter Property="BorderThickness" Value="0"/>
+					<Style.Triggers>
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter Property="Background" Value="#666"/>
+						</Trigger>
+					</Style.Triggers>
+				</Style>
+			</Menu.Resources>
 
-			<Grid>
+			<MenuItem Header="_File" ItemContainerStyle="{StaticResource TopMenuStyle}">
+				<MenuItem Header="Settings" Click="Settings_Click" Style="{StaticResource SubMenuStyle}"/>
+				<Separator/>
+				<MenuItem Header="Exit" Click="Exit_Click" Style="{StaticResource SubMenuStyle}"/>
+			</MenuItem>
+
+			<MenuItem Header="_Help" ItemContainerStyle="{StaticResource TopMenuStyle}">
+				<MenuItem Header="About" Click="About_Click" Style="{StaticResource SubMenuStyle}"/>
+			</MenuItem>
+
+			<MenuItem Header="More" ItemContainerStyle="{StaticResource TopMenuStyle}">
+				<MenuItem Header="Show Map" Click="ShowMap_Click"  Style="{StaticResource SubMenuStyle}"/>
+			</MenuItem>
+
+			
+		</Menu>
+
+		<!-- ===== Main content (Left + Right panels) ===== -->
+		<Grid Grid.Row="1">
+			<!-- Column definitions -->
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<!-- Left panel -->
+				<ColumnDefinition Width="400"/>
+				<!-- Right panel -->
+			</Grid.ColumnDefinitions>
+
+			<!-- ===== Left Panel (Active + Released Alerts) ===== -->
+			<Grid Grid.Column="0">
 				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto"/>
-					<!-- Last updated -->
-					<RowDefinition Height="*"/>
-					<!-- Dynamic news -->
-					<RowDefinition Height="Auto"/>
-					<!-- System time -->
+					<RowDefinition Height="3*"/>
+					<RowDefinition Height="1*"/>
 				</Grid.RowDefinitions>
 
-				<!-- Top: Last updated -->
-				<TextBlock x:Name="LastUpdatedText" Grid.Row="0" Text="nothing fetched" FontWeight="Bold" 
-						   FontSize="14" TextAlignment="Center" Margin="0,0,0,10" />
+				<!-- Active Alerts -->
+				<Border Grid.Row="0" BorderBrush="Black" BorderThickness="1" Margin="5" Background="Gray" CornerRadius="12" FlowDirection="RightToLeft">
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*"/>
+							<RowDefinition Height="Auto"/>
+						</Grid.RowDefinitions>
 
-				<!-- Middle: Dynamic news items -->
-				<ScrollViewer x:Name="NewsScrollViewer" Grid.Row="1" FlowDirection="RightToLeft"
-				  VerticalScrollBarVisibility="Visible"
-				  HorizontalScrollBarVisibility="Disabled">
-					<ScrollViewer.Resources>
-						<Style TargetType="ScrollBar">
-							<Setter Property="Background" Value="DarkGray"/>
-							<Setter Property="Foreground" Value="LightBlue"/>
-							<Setter Property="Width" Value="12"/>
-						</Style>
-					</ScrollViewer.Resources>
-					<ItemsControl x:Name="NewsItemsControl">
+						<StackPanel Grid.Row="0">
+							<ItemsControl x:Name="AlertsControl" ItemsSource="{Binding AllAlerts}">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<WrapPanel Orientation="Horizontal"/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<Border Padding="10" Margin="5" CornerRadius="5" BorderThickness="1" BorderBrush="Black" Background="{Binding GroupColor}" MaxWidth="500">
+											<VirtualizingStackPanel Orientation="Vertical">
+												<TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="16"/>
+												<TextBlock Text="{Binding AlertDate, StringFormat='dd/MM HH:mm'}"/>
+												<TextBlock Text="{Binding DisplayLocations}" FontSize="15" TextWrapping="Wrap"/>
+											</VirtualizingStackPanel>
+										</Border>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+
+							<TextBlock x:Name="LabelNoData" Text="No Data" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
+						</StackPanel>
+
+						<TextBlock x:Name="AlertsLastUpdatedText" Grid.Row="1" Text="Last updated: --" FontSize="14" FontWeight="Bold" FontStyle="Italic" Margin="5" HorizontalAlignment="Center"/>
+					</Grid>
+				</Border>
+
+				<!-- Released Alerts -->
+				<Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Margin="5" Background="DimGray" CornerRadius="12" FlowDirection="RightToLeft">
+					<ItemsControl x:Name="ReleaseLocationsControl" ItemsSource="{Binding FinishedAlerts}">
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
-								<StackPanel Margin="0,5">
-									<TextBlock>
-										<Run Text="{Binding date, StringFormat={}{0:dd/MM HH:mm}}" FontSize="14" />
-									</TextBlock>
-									<TextBlock FontWeight="Bold" TextWrapping="Wrap" Text="{Binding title}" FontSize="18" />
-									<TextBlock TextWrapping="Wrap" Text="{Binding text}" FontSize="16" />
-									<Separator Margin="0,8,0,8"/>
-								</StackPanel>
+								<Border Padding="8" Margin="5" CornerRadius="5" BorderBrush="Black" Background="DarkSeaGreen">
+									<VirtualizingStackPanel Orientation="Horizontal">
+										<TextBlock Text="{Binding Title}" FontWeight="Bold"/>
+										<TextBlock Text=" - "/>
+										<TextBlock Text="{Binding AlertDate, StringFormat=dd/MM/yyyy HH:mm}" FontStyle="Italic"/>
+										<TextBlock Text=" - "/>
+										<TextBlock Text="{Binding ReleaseLocationsText}" TextWrapping="Wrap"/>
+									</VirtualizingStackPanel>
+								</Border>
 							</DataTemplate>
 						</ItemsControl.ItemTemplate>
 					</ItemsControl>
-				</ScrollViewer>
-				
-
-				<!-- Bottom: System time -->
-				<TextBlock x:Name="SystemTimeText" Grid.Row="2" Text="00:00:00" FontSize="24"
-                   HorizontalAlignment="Center" FontStyle="Italic"/>
+				</Border>
 			</Grid>
-		</Border>
 
-		<Grid Grid.Column="0">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="3*"/>
-				<RowDefinition Height="1*"/>
-			</Grid.RowDefinitions>
-			
-			
-
-			<Border Grid.Row="0" BorderBrush="Black" BorderThickness="1" Margin="5" Background="Gray" CornerRadius="12" FlowDirection="RightToLeft" >
+			<!-- ===== Right Panel (News) ===== -->
+			<Border Grid.Column="1" BorderBrush="DarkGray" BorderThickness="1" Margin="5" Padding="8" CornerRadius="12"  Background="SlateGray">
 				<Grid>
 					<Grid.RowDefinitions>
-						<RowDefinition Height="*" />
-						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto"/>
+						<!-- Last updated -->
+						<RowDefinition Height="*"/>
+						<!-- News feed -->
+						<RowDefinition Height="Auto"/>
+						<!-- System time -->
 					</Grid.RowDefinitions>
 
-					<StackPanel Grid.Row="0">
-						<ItemsControl x:Name="AlertsControl" ItemsSource="{Binding AllAlerts}">
-							<ItemsControl.ItemsPanel>
-								<ItemsPanelTemplate>
-									<WrapPanel Orientation="Horizontal" />
-								</ItemsPanelTemplate>
-							</ItemsControl.ItemsPanel>
+					<TextBlock x:Name="LastUpdatedText" Grid.Row="0" Text="nothing fetched" FontWeight="Bold" FontSize="14" TextAlignment="Center" Margin="0,0,0,10"/>
 
+					<ScrollViewer x:Name="NewsScrollViewer" Grid.Row="1" FlowDirection="RightToLeft" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled">
+						<ScrollViewer.Resources>
+							<Style TargetType="ScrollBar">
+								<Setter Property="Background" Value="DarkGray"/>
+								<Setter Property="Foreground" Value="LightBlue"/>
+								<Setter Property="Width" Value="12"/>
+							</Style>
+						</ScrollViewer.Resources>
+
+						<ItemsControl x:Name="NewsItemsControl">
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
-									<Border Padding="10" Margin="5" CornerRadius="5" BorderThickness="1" BorderBrush="Black" Background="{Binding GroupColor}" MaxWidth="500">
-										<VirtualizingStackPanel Orientation="Vertical" >
-											<TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="16"/>
-											<TextBlock Text="{Binding AlertDate, StringFormat='dd/MM HH:mm'}"/>
-											<TextBlock Text="{Binding DisplayLocations}" FontSize="15" TextWrapping="Wrap" />
-										</VirtualizingStackPanel>
-									</Border>
+									<StackPanel Margin="0,5">
+										<TextBlock>
+                                            <Run Text="{Binding date, StringFormat={}{0:dd/MM HH:mm}}" FontSize="14"/>
+										</TextBlock>
+										<TextBlock FontWeight="Bold" TextWrapping="Wrap" Text="{Binding title}" FontSize="18"/>
+										<TextBlock TextWrapping="Wrap" Text="{Binding text}" FontSize="16"/>
+										<Separator Margin="0,8,0,8"/>
+									</StackPanel>
 								</DataTemplate>
 							</ItemsControl.ItemTemplate>
 						</ItemsControl>
+					</ScrollViewer>
 
-						<TextBlock x:Name="LabelNoData" Text="No Data" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
-					</StackPanel>
-					
-
-					<!-- Last updated -->
-					<TextBlock x:Name="AlertsLastUpdatedText"  Grid.Row="1"
-					   Text="Last updated: --"
-					   FontSize="14"
-					   FontWeight="Bold"
-						FontStyle="Italic"
-					   Margin="5"
-					   HorizontalAlignment="Center"/>
+					<TextBlock x:Name="SystemTimeText" Grid.Row="2" Text="00:00:00" FontSize="24" HorizontalAlignment="Center" FontStyle="Italic"/>
 				</Grid>
 			</Border>
 
-			<Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Margin="5" Background="DimGray" CornerRadius="12" FlowDirection="RightToLeft">
-				<ItemsControl x:Name="ReleaseLocationsControl" ItemsSource="{Binding FinishedAlerts}">
-					<ItemsControl.ItemTemplate>
-						<DataTemplate>
-							<Border Padding="8" Margin="5" CornerRadius="5" BorderBrush="Black" Background="DarkSeaGreen" >
-								<VirtualizingStackPanel  Orientation="Horizontal">
-									<TextBlock Text="{Binding Title}" FontWeight="Bold"/>
-									<TextBlock Text=" - " />
-									<TextBlock Text="{Binding AlertDate, StringFormat=dd/MM/yyyy HH:mm}" FontStyle="Italic"/>
-									<TextBlock Text=" - " />
-									<TextBlock Text="{Binding ReleaseLocationsText}" TextWrapping="Wrap"/>
-								</VirtualizingStackPanel>
-							</Border>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
-				</ItemsControl>
-			</Border>
 		</Grid>
-
-
 	</Grid>
 </Window>

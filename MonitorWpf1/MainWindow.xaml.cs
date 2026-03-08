@@ -66,6 +66,30 @@ namespace MonitorWpf1
 
 		}
 
+		private void Settings_Click(object sender, RoutedEventArgs e)
+		{
+			//SettingsWindow w = new SettingsWindow();
+			//w.ShowDialog();
+		}
+
+		private void Exit_Click(object sender, RoutedEventArgs e)
+		{
+			this.Close();
+		}
+
+		private void About_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void ShowMap_Click(object sender, RoutedEventArgs e)
+		{
+			MapWindow window = new MapWindow();
+			window.Show();
+		}
+
+		
+
 		private async void TimerNews_Tick(object sender, EventArgs e)
 		{
 			var newsItems = await _newsService.GetYnetNewsAsync();
@@ -166,5 +190,7 @@ namespace MonitorWpf1
 
 			AlertsLastUpdatedText.Text = $"Last updated: {DateTime.Now:dd/MM/yyyy HH:mm:ss}";
 		}
+
+		
 	}
 }
