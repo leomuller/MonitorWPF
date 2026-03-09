@@ -1,0 +1,842 @@
+[
+	{
+		"Name": "Acre",
+		"Label": "עכו",
+		"Triggers": [ "עכו" ],
+		"X": 362,
+		"Y": 212,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Afula",
+		"Label": "עפולה",
+		"Triggers": [ "עפולה" ],
+		"X": 450,
+		"Y": 360,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Arad",
+		"Label": "ערד",
+		"Triggers": [ "ערד" ],
+		"X": 415,
+		"Y": 1006,
+		"BaseRadius": 50
+	},
+	{
+		"Name": "Ariel",
+		"Label": "אריאל",
+		"Triggers": [ "אריאל" ],
+		"X": 405,
+		"Y": 605,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Arraba",
+		"Label": "עראבה",
+		"Triggers": [ "עראבה" ],
+		"X": 411,
+		"Y": 466,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Ashdod",
+		"Label": "אשדוד",
+		"Triggers": [ "אשדוד" ],
+		"X": 188,
+		"Y": 750,
+		"BaseRadius": 50
+	},
+	{
+		"Name": "Ashkelon",
+		"Label": "אשקלון",
+		"Triggers": [ "אשקלון" ],
+		"X": 160,
+		"Y": 810,
+		"BaseRadius": 60
+	},
+	{
+		"Name": "Atarot",
+		"Label": "עטרות",
+		"Triggers": [ "עטרות" ],
+		"X": 424,
+		"Y": 720,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Baqa Al-Gharbiyye",
+		"Label": "באקה אל-גרבייה",
+		"Triggers": [ "באקה אל-גרבייה" ],
+		"X": 350,
+		"Y": 460,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Bat Yam",
+		"Label": "בת ים",
+		"Triggers": [ "בת ים" ],
+		"X": 225,
+		"Y": 650,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Beer Yaakov",
+		"Label": "באר יעקב",
+		"Triggers": [ "באר יעקב" ],
+		"X": 290,
+		"Y": 685,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Beersheba",
+		"Label": "באר שבע",
+		"Triggers": [ "באר שבע" ],
+		"X": 245,
+		"Y": 1010,
+		"BaseRadius": 50
+	},
+	{
+		"Name": "Beit Shean",
+		"Label": "בית שאן",
+		"Triggers": [ "בית שאן" ],
+		"X": 532,
+		"Y": 420,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Beit Shemesh",
+		"Label": "בית שמש",
+		"Triggers": [ "בית שמש" ],
+		"X": 340,
+		"Y": 780,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Beitar Illit",
+		"Label": "ביתר עילית",
+		"Triggers": [ "ביתר עילית" ],
+		"X": 380,
+		"Y": 788,
+		"BaseRadius": 25
+	},
+	{
+		"Name": "Ben Gurion Airport",
+		"Label": "נתב''ג",
+		"Triggers": [ "נתב''ג" ],
+		"X": 300,
+		"Y": 670,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Bnei Brak",
+		"Label": "בני ברק",
+		"Triggers": [ "בני ברק" ],
+		"X": 265,
+		"Y": 615,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Caesarea",
+		"Label": "קיסריה",
+		"Triggers": [ "קיסריה" ],
+		"X": 290,
+		"Y": 410,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Carmiel",
+		"Label": "כרמיאל",
+		"Triggers": [ "כרמיאל" ],
+		"X": 448,
+		"Y": 221,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Daliyat Al-Karmel",
+		"Label": "דאלית אל-כרמל",
+		"Triggers": [ "דאלית אל-כרמל" ],
+		"X": 355,
+		"Y": 340,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Dimona",
+		"Label": "דימונה",
+		"Triggers": [ "דימונה" ],
+		"X": 340,
+		"Y": 1095,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Eilat",
+		"Label": "אילת",
+		"Triggers": [ "אילת" ],
+		"X": 306,
+		"Y": 1803,
+		"BaseRadius": 45
+	},
+	{
+		"Name": "Ein Bokek",
+		"Label": "עין בוקק",
+		"Triggers": [ "עין בוקק" ],
+		"X": 480,
+		"Y": 1038,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Ein Gedi",
+		"Label": "עין גדי",
+		"Triggers": [ "עין גדי" ],
+		"X": 495,
+		"Y": 890,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Elad",
+		"Label": "אלעד",
+		"Triggers": [ "אלעד" ],
+		"X": 300,
+		"Y": 640,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Ethe Taiyiba",
+		"Label": "טייבה",
+		"Triggers": [ "טייבה" ],
+		"X": 320,
+		"Y": 540,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Ganei Tikva",
+		"Label": "גני תקווה",
+		"Triggers": [ "גני תקווה" ],
+		"X": 288,
+		"Y": 625,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Gan Yavne",
+		"Label": "גן יבנה",
+		"Triggers": [ "גן יבנה" ],
+		"X": 206,
+		"Y": 753,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Gedera",
+		"Label": "גדרה",
+		"Triggers": [ "גדרה" ],
+		"X": 235,
+		"Y": 750,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Givat Shmuel",
+		"Label": "גבעת שמואל",
+		"Triggers": [ "גבעת שמואל" ],
+		"X": 280,
+		"Y": 618,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Givat Zeev",
+		"Label": "גבעת זאב",
+		"Triggers": [ "גבעת זאב" ],
+		"X": 390,
+		"Y": 715,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Givatayim",
+		"Label": "גבעתיים",
+		"Triggers": [ "גבעתיים" ],
+		"X": 265,
+		"Y": 625,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Hadera",
+		"Label": "חדרה",
+		"Triggers": [ "חדרה" ],
+		"X": 297,
+		"Y": 445,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Haifa",
+		"Label": "חיפה",
+		"Triggers": [ "חיפה" ],
+		"X": 310,
+		"Y": 270,
+		"BaseRadius": 60
+	},
+	{
+		"Name": "Harish",
+		"Label": "חריש",
+		"Triggers": [ "חריש" ],
+		"X": 352,
+		"Y": 440,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Hatzor HaGlilit",
+		"Label": "חצור הגלילית",
+		"Triggers": [ "חצור הגלילית" ],
+		"X": 545,
+		"Y": 195,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Herzliya",
+		"Label": "הרצליה",
+		"Triggers": [ "הרצליה" ],
+		"X": 255,
+		"Y": 585,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Hod HaSharon",
+		"Label": "הוד השרון",
+		"Triggers": [ "הוד השרון" ],
+		"X": 285,
+		"Y": 585,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Holon",
+		"Label": "חולון",
+		"Triggers": [ "חולון" ],
+		"X": 235,
+		"Y": 650,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Jerusalem",
+		"Label": "ירושלים",
+		"Triggers": [ "ירושלים" ],
+		"X": 415,
+		"Y": 765,
+		"BaseRadius": 60
+	},
+	{
+		"Name": "Jisr Az-Zarqa",
+		"Label": "ג'סר א-זרקא",
+		"Triggers": [ "ג'סר א-זרקא" ],
+		"X": 285,
+		"Y": 420,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Kafr Qara",
+		"Label": "כפר קרע",
+		"Triggers": [ "כפר קרע" ],
+		"X": 345,
+		"Y": 455,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Kafr Qasim",
+		"Label": "כפר קאסם",
+		"Triggers": [ "כפר קאסם" ],
+		"X": 320,
+		"Y": 625,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Katzrin",
+		"Label": "קצרין",
+		"Triggers": [ "קצרין" ],
+		"X": 607,
+		"Y": 182,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Kfar Saba",
+		"Label": "כפר סבא",
+		"Triggers": [ "כפר סבא" ],
+		"X": 295,
+		"Y": 565,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Kfar Yona",
+		"Label": "כפר יונה",
+		"Triggers": [ "כפר יונה" ],
+		"X": 295,
+		"Y": 505,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Kiryat Gat",
+		"Label": "קרית גת",
+		"Triggers": [ "קרית גת" ],
+		"X": 240,
+		"Y": 840,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Kiryat Malakhi",
+		"Label": "קרית מלאכי",
+		"Triggers": [ "קרית מלאכי" ],
+		"X": 230,
+		"Y": 779,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Kiryat Shmona",
+		"Label": "קרית שמונה",
+		"Triggers": [ "קרית שמונה" ],
+		"X": 560,
+		"Y": 77,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Krayot",
+		"Label": "קריות",
+		"Triggers": [ "קרית מוצקין", "קרית ים", "קרית ביאליק" ],
+		"X": 355,
+		"Y": 265,
+		"BaseRadius": 60
+	},
+	{
+		"Name": "Lehavim",
+		"Label": "להבים",
+		"Triggers": [ "להבים" ],
+		"X": 250,
+		"Y": 975,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Lod",
+		"Label": "לוד",
+		"Triggers": [ "לוד" ],
+		"X": 295,
+		"Y": 680,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Maale Adumim",
+		"Label": "מעלה אדומים",
+		"Triggers": [ "מעלה אדומים" ],
+		"X": 460,
+		"Y": 765,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Maalot Tarshiha",
+		"Label": "מעלות תרשיחא",
+		"Triggers": [ "מעלות תרשיחא" ],
+		"X": 415,
+		"Y": 175,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Maghar",
+		"Label": "מגאר",
+		"Triggers": [ "מגאר" ],
+		"X": 485,
+		"Y": 240,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Majdal Shams",
+		"Label": "מג'דל שמס",
+		"Triggers": [ "מג'דל שמס" ],
+		"X": 635,
+		"Y": 45,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Meitar",
+		"Label": "מיתר",
+		"Triggers": [ "מיתר" ],
+		"X": 285,
+		"Y": 980,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Metula",
+		"Label": "מטולה",
+		"Triggers": [ "מטולה" ],
+		"X": 565,
+		"Y": 50,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Mevaseret Zion",
+		"Label": "מבשרת ציון",
+		"Triggers": [ "מבשרת ציון" ],
+		"X": 385,
+		"Y": 750,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Migdal HaEmek",
+		"Label": "מגדל העמק",
+		"Triggers": [ "מגדל העמק" ],
+		"X": 410,
+		"Y": 340,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Mitzpe Ramon",
+		"Label": "מצפה רמון",
+		"Triggers": [ "מצפה רמון" ],
+		"X": 251,
+		"Y": 1304,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Modiin",
+		"Label": "מודיעין",
+		"Triggers": [ "מודיעין" ],
+		"X": 355,
+		"Y": 715,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Modiin Illit",
+		"Label": "מודיעין עילית",
+		"Triggers": [ "מודיעין עילית" ],
+		"X": 365,
+		"Y": 700,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Mt Hermon",
+		"Label": "חרמון",
+		"Triggers": [ "חרמון" ],
+		"X": 645,
+		"Y": 30,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Nahariya",
+		"Label": "נהריה",
+		"Triggers": [ "נהריה" ],
+		"X": 368,
+		"Y": 171,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Nazareth",
+		"Label": "נצרת",
+		"Triggers": [ "נצרת" ],
+		"X": 450,
+		"Y": 320,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Nesher",
+		"Label": "נשר",
+		"Triggers": [ "נשר" ],
+		"X": 350,
+		"Y": 295,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Ness Ziona",
+		"Label": "נס ציונה",
+		"Triggers": [ "נס ציונה" ],
+		"X": 255,
+		"Y": 705,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Netanya",
+		"Label": "נתניה",
+		"Triggers": [ "נתניה" ],
+		"X": 270,
+		"Y": 505,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Netivot",
+		"Label": "נתיבות",
+		"Triggers": [ "נתיבות" ],
+		"X": 165,
+		"Y": 942,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Neve Zohar",
+		"Label": "נווה זוהר",
+		"Triggers": [ "נווה זוהר" ],
+		"X": 480,
+		"Y": 1050,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Nof HaGalil",
+		"Label": "נוף הגליל",
+		"Triggers": [ "נוף הגליל" ],
+		"X": 445,
+		"Y": 330,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Ofakim",
+		"Label": "אופקים",
+		"Triggers": [ "אופקים" ],
+		"X": 175,
+		"Y": 995,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Or Yehuda",
+		"Label": "אור יהודה",
+		"Triggers": [ "אור יהודה" ],
+		"X": 274,
+		"Y": 660,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Pardes Hanna Karkur",
+		"Label": "פרדס חנה כרכור",
+		"Triggers": [ "פרדס חנה כרכור" ],
+		"X": 320,
+		"Y": 438,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Petah Tikva",
+		"Label": "פתח תקווה",
+		"Triggers": [ "פתח תקווה" ],
+		"X": 282,
+		"Y": 615,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Poriya",
+		"Label": "פוריה",
+		"Triggers": [ "פוריה" ],
+		"X": 540,
+		"Y": 325,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Qalansuwa",
+		"Label": "קלנסווה",
+		"Triggers": [ "קלנסווה" ],
+		"X": 315,
+		"Y": 520,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Raanana",
+		"Label": "רעננה",
+		"Triggers": [ "רעננה" ],
+		"X": 273,
+		"Y": 571,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Rahat",
+		"Label": "רהט",
+		"Triggers": [ "רהט" ],
+		"X": 235,
+		"Y": 975,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Ramat Gan",
+		"Label": "רמת גן",
+		"Triggers": [ "רמת גן" ],
+		"X": 265,
+		"Y": 635,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Ramat HaSharon",
+		"Label": "רמת השרון",
+		"Triggers": [ "רמת השרון" ],
+		"X": 260,
+		"Y": 600,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Ramla",
+		"Label": "רמלה",
+		"Triggers": [ "רמלה" ],
+		"X": 285,
+		"Y": 690,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Rehovot",
+		"Label": "רחובות",
+		"Triggers": [ "רחובות" ],
+		"X": 258,
+		"Y": 705,
+		"BaseRadius": 50
+	},
+	{
+		"Name": "Rishon LeZion",
+		"Label": "ראשון לציון",
+		"Triggers": [ "ראשון לציון" ],
+		"X": 250,
+		"Y": 672,
+		"BaseRadius": 60
+	},
+	{
+		"Name": "Rosh HaNikra",
+		"Label": "ראש הנקרה",
+		"Triggers": [ "ראש הנקרה" ],
+		"X": 365,
+		"Y": 140,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Rosh HaAyin",
+		"Label": "ראש העין",
+		"Triggers": [ "ראש העין" ],
+		"X": 315,
+		"Y": 625,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Rosh Pina",
+		"Label": "ראש פינה",
+		"Triggers": [ "ראש פינה" ],
+		"X": 544,
+		"Y": 194,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Sakhnin",
+		"Label": "סח'נין",
+		"Triggers": [ "סח'נין" ],
+		"X": 455,
+		"Y": 235,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Sderot",
+		"Label": "שדרות",
+		"Triggers": [ "שדרות" ],
+		"X": 169,
+		"Y": 880,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Shefaram",
+		"Label": "שפרעם",
+		"Triggers": [ "שפרעם" ],
+		"X": 395,
+		"Y": 280,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Shlomi",
+		"Label": "שלומי",
+		"Triggers": [ "שלומי" ],
+		"X": 385,
+		"Y": 145,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Shoham",
+		"Label": "שוהם",
+		"Triggers": [ "שוהם" ],
+		"X": 325,
+		"Y": 665,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Tamra",
+		"Label": "טמרה",
+		"Triggers": [ "טמרה" ],
+		"X": 405,
+		"Y": 255,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Tel Aviv",
+		"Label": "תל אביב",
+		"Triggers": [ "תל אביב" ],
+		"X": 238,
+		"Y": 610,
+		"BaseRadius": 60
+	},
+	{
+		"Name": "Tiberias",
+		"Label": "טבריה",
+		"Triggers": [ "טבריה" ],
+		"X": 540,
+		"Y": 290,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Tira",
+		"Label": "טירה",
+		"Triggers": [ "טירה" ],
+		"X": 320,
+		"Y": 560,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Tirat Carmel",
+		"Label": "טירת כרמל",
+		"Triggers": [ "טירת כרמל" ],
+		"X": 320,
+		"Y": 305,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Tzfat",
+		"Label": "צפת",
+		"Triggers": [ "צפת" ],
+		"X": 529,
+		"Y": 200,
+		"BaseRadius": 40
+	},
+	{
+		"Name": "Umm Al-Fahm",
+		"Label": "אום אל-פחם",
+		"Triggers": [ "אום אל-פחם" ],
+		"X": 370,
+		"Y": 430,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Yavne",
+		"Label": "יבנה",
+		"Triggers": [ "יבנה" ],
+		"X": 210,
+		"Y": 725,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Yehud-Monosson",
+		"Label": "יהוד-מונוסון",
+		"Triggers": [ "יהוד-מונוסון" ],
+		"X": 295,
+		"Y": 665,
+		"BaseRadius": 30
+	},
+	{
+		"Name": "Yeruham",
+		"Label": "ירוחם",
+		"Triggers": [ "ירוחם" ],
+		"X": 305,
+		"Y": 1135,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Yokneam",
+		"Label": "יקנעם",
+		"Triggers": [ "יקנעם" ],
+		"X": 375,
+		"Y": 345,
+		"BaseRadius": 35
+	},
+	{
+		"Name": "Zikhron Yaakov",
+		"Label": "זכרון יעקב",
+		"Triggers": [ "זכרון יעקב" ],
+		"X": 315,
+		"Y": 405,
+		"BaseRadius": 35
+	}
+]

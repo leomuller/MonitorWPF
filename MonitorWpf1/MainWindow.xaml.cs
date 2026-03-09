@@ -34,6 +34,8 @@ namespace MonitorWpf1
 		private DispatcherTimer updateTimer;
 		private DispatcherTimer scrollTimer;
 
+		private MapWindow _mapWindowInstance = null;
+
 		public MainWindow()
         {
             InitializeComponent();
@@ -84,8 +86,27 @@ namespace MonitorWpf1
 
 		private void ShowMap_Click(object sender, RoutedEventArgs e)
 		{
-			MapWindow window = new MapWindow();
-			window.Show();
+			// If window doesn't exist or was closed/disposed
+			if (_mapWindowInstance == null || !Application.Current.Windows.Cast<Window>().Any(x => x == _mapWindowInstance))
+			{
+				_mapWindowInstance = new MapWindow();
+
+				// Ensure that if the user clicks 'X', we just hide it instead of destroying it
+				// This keeps the JSON data and locations loaded in memory
+				_mapWindowInstance.Closing += (s, ev) =>
+				{
+					ev.Cancel = true;
+					_mapWindowInstance.Hide();
+				};
+
+				_mapWindowInstance.Show();
+			}
+			else
+			{
+				// If it's already open (or hidden), show it and bring to front
+				_mapWindowInstance.Show();
+				_mapWindowInstance.Activate();
+			}
 		}
 
 		
@@ -152,28 +173,51 @@ namespace MonitorWpf1
 
 		private async void TimerAlerts_Tick(object sender, EventArgs e)
 		{
-			var alertGroups = await _alertService.GetOrefAlertsAsync();
-			if(alertGroups != null && alertGroups.Count > 0)
+			var rawAlerts = await _alertService.GetOrefAlertsAsync();
+
+
+			if (rawAlerts != null && rawAlerts.Count > 0)
 			{
 				LabelNoData.Text = "";
 
 				// Update main alerts
-				var sortedAlerts = alertGroups.OrderByDescending(a => a.AlertDate).ToList();
+				var groupedUI = _alertService.GroupAlerts(rawAlerts);
 
 				AllAlerts.Clear();
-				foreach (var g in sortedAlerts)
+				foreach (var g in groupedUI.OrderByDescending(x => x.AlertDate))
 				{
 					AllAlerts.Add(g);
 				}
+
+
+				//AllAlerts.Clear();
+				//foreach (var g in groupedUI)
+				//{
+				//	AllAlerts.Add(g);
+				//}
 				//AlertsControl.ItemsSource = alertGroups.OrderByDescending(g => g.AlertDate).ToList();
 
 
 				// Update finished/go-out alerts (category 13)
-				var sortedReleases = alertGroups.Where(a => a.Category == 13).OrderByDescending(a => a.AlertDate);
+
+				//var sortedReleases = alertGroups.Where(a => a.Category == 13).OrderByDescending(a => a.AlertDate);
+				//FinishedAlerts.Clear();
+				//foreach (var g in sortedReleases)
+				//{
+				//	FinishedAlerts.Add(g);
+				//}
+
 				FinishedAlerts.Clear();
-				foreach (var g in sortedReleases)
+				foreach (var g in groupedUI.Where(x => x.Category == 13).OrderByDescending(a => a.AlertDate))
 				{
 					FinishedAlerts.Add(g);
+				}
+
+				//TO be added by Gemini, check if MapWindow is open, and if it is 'push the data'
+				// Push to Map
+				if (_mapWindowInstance != null && _mapWindowInstance.IsVisible)
+				{
+					_mapWindowInstance.SyncWithService(rawAlerts);
 				}
 
 				//ReleaseLocationsControl.ItemsSource = alertGroups
