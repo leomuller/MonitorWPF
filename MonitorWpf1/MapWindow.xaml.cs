@@ -42,19 +42,16 @@ namespace MonitorWpf1
 
 		private List<FireAlarm> _alarms = new List<FireAlarm>();
 		private const double BaseRadius = 25.0; // Radius at 100% map scale
-		private readonly Dictionary<string, MapLocation> _locationRegistry = new Dictionary<string, MapLocation>();
+		//private readonly Dictionary<string, MapLocation> _locationRegistry = new Dictionary<string, MapLocation>();
 		private HashSet<string> _loggedMissingCities = new HashSet<string>();
+		//private readonly Dictionary<string, MapLocation> _triggerCache = new Dictionary<string, MapLocation>();
 
 		public MapWindow()
 		{
 			InitializeComponent();
 			MapImage.SizeChanged += (s, e) => UpdateAllPositions();
 
-			LoadLocationsFromJson(@"C:\DevLeo\PR2025\MonitorWpf1\MonitorWpf1\Data\MapLocations.json");
-
-			//this.Loaded += (s, e) => {
-			//	MarkAlarm("אילת", AlertStatus.NewAlert);
-			//};
+			//LoadLocationsFromJson(@"C:\DevLeo\PR2025\MonitorWpf1\MonitorWpf1\Data\MapLocations.json");
 
 			//MarkAlarm("נהריה", AlertStatus.NewAlert);
 
@@ -79,78 +76,86 @@ namespace MonitorWpf1
 
 		}
 
-		private readonly Dictionary<string, MapLocation> _triggerCache = new Dictionary<string, MapLocation>();
+		
+		//private void LoadLocationsFromJson(string filePath)
+		//{
+		//	if (!File.Exists(filePath)) return;
 
-		private void LoadLocationsFromJson(string filePath)
-		{
-			if (!File.Exists(filePath)) return;
+		//	try
+		//	{
+		//		string json = File.ReadAllText(filePath, Encoding.UTF8);
+		//		var list = JsonConvert.DeserializeObject<List<MapLocation>>(json);
 
-			try
-			{
-				string json = File.ReadAllText(filePath, Encoding.UTF8);
-				var list = JsonConvert.DeserializeObject<List<MapLocation>>(json);
+		//		_locationRegistry.Clear();
+		//		foreach (var item in list)
+		//		{
+		//			_locationRegistry[item.Name] = item;
 
-				_locationRegistry.Clear();
-				foreach (var item in list)
-				{
-					_locationRegistry[item.Name] = item;
-
-					// Build the fast-lookup cache
-					if (item.Triggers != null)
-					{
-						foreach (var t in item.Triggers)
-							_triggerCache[t.Trim()] = item;
-					}
-				}
+		//			// Build the fast-lookup cache
+		//			if (item.Triggers != null)
+		//			{
+		//				foreach (var t in item.Triggers)
+		//					_triggerCache[t.Trim()] = item;
+		//			}
+		//		}
 
 
-				//System.Diagnostics.Debug.WriteLine($"Loaded {_locationRegistry.Count} cities from JSON.");
-			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine($"Failed to load dictionary JSON: {ex.Message}");
-			}
-		}
+		//		//System.Diagnostics.Debug.WriteLine($"Loaded {_locationRegistry.Count} cities from JSON.");
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		System.Diagnostics.Debug.WriteLine($"Failed to load dictionary JSON: {ex.Message}");
+		//	}
+		//}
 
-		public void MarkAlarm(string locName, AlertStatus status)
+		public void MarkAlarm(OrefAlertsService alertService, string locName, AlertStatus status)
 		{
 
 			// Optional: Clear UI before processing new update
 			//OverlayCanvas.Children.Clear();
 			//_alarms.Clear();
 
-			//// 1. Look up the city coordinates in your "Database" (Dictionary)
-			//if (_locationRegistry.TryGetValue(locName, out var loc))
-			//{
-			//	// 2. Found it! Now tell the UI worker to draw/update it.
-			//	// Notice we pass loc.X, loc.Y, and loc.BaseRadius from the dictionary
-			//	UpdateAlarm(locName, loc.X, loc.Y, status, loc.BaseRadius, loc.Label);
-			//}
-
-			// Scan all locations to see if any Trigger matches exactly
-			//var loc = _locationRegistry.Values.FirstOrDefault(l =>
-			//	l.Triggers != null && l.Triggers.Any(t => t.Trim() == locName));
-
-			//if (loc != null)
-
-			if (_triggerCache.TryGetValue(locName, out var loc))
+			//check if our map locations have this location name:
+			//TBD - this can create the same alarm multiple times for the same spot (with alternative name), we should prevent that. 
+			if(alertService.dicMapLocations.ContainsKey(locName))
 			{
-				UpdateAlarm(loc.Name, loc.X, loc.Y, status, loc.BaseRadius, loc.Label);
+				MapLocation markLocation = alertService.dicMapLocations[locName];
+				UpdateAlarm(markLocation.Name, markLocation.X, markLocation.Y, status, markLocation.BaseRadius, markLocation.Label);
 			}
 			else
 			{
-				//System.Diagnostics.Debug.WriteLine($"No match found for: {locName}");
-
-				// Only log it if we haven't already logged it during this session
-				if (!_loggedMissingCities.Contains(locName))
+				//log missing city 
+				//TBD
+				if(alertService.missingLocations.Contains(locName) == false)
 				{
+					//need to be added:
+					alertService.missingLocations.Add(locName); //to list in this app.
 					LogMissingCity(locName);
-					_loggedMissingCities.Add(locName);
-
-					// Also keep the debug line so you see it in real-time
-					//System.Diagnostics.Debug.WriteLine($"MISSING CITY LOGGED: {locName}");
 				}
 			}
+
+
+			//private Dictionary<string, MapLocation> dicMapLocations;
+			//private List<MapLocation> mapLocations;
+			//private List<MapLocation> missingLocations;
+
+
+			//if (_triggerCache.TryGetValue(locName, out var loc))
+			//{
+			//	UpdateAlarm(loc.Name, loc.X, loc.Y, status, loc.BaseRadius, loc.Label);
+			//}
+			//else
+			//{
+			//	// Only log it if we haven't already logged it during this session
+			//	if (!_loggedMissingCities.Contains(locName))
+			//	{
+			//		LogMissingCity(locName);
+			//		_loggedMissingCities.Add(locName);
+
+			//		// Also keep the debug line so you see it in real-time
+			//		//System.Diagnostics.Debug.WriteLine($"MISSING CITY LOGGED: {locName}");
+			//	}
+			//}
 		}
 
 		private void LogMissingCity(string cityName)
@@ -158,11 +163,25 @@ namespace MonitorWpf1
 			try
 			{
 				string folderPath = @"C:\DevLeo\PR2025\MonitorWpf1\MonitorWpf1\Data\";
-				string filePath = System.IO.Path.Combine(folderPath, "MissingCities.json");
+				string filePath = System.IO.Path.Combine(folderPath, "MissingLocations.json");
 
 				// Format it as a JSON object for easy copy-pasting into your main file
 				// We use \" to include quotes inside the string
-				string jsonEntry = $"  {{ \"Name\": \"{cityName}\", \"X\": 0, \"Y\": 0, \"BaseRadius\": 30 }},{Environment.NewLine}";
+
+				var entry = new
+				{
+					Name = cityName,
+					Label = cityName,
+					Triggers = new[] { cityName },
+					X = 0,
+					Y = 0,
+					BaseRadius = 20
+				};
+
+				// serialize single entry
+				string jsonEntry = JsonConvert.SerializeObject(entry) + "," + Environment.NewLine;
+
+				//string jsonEntry = $"  {{ \"Name\": \"{cityName}\",\"Label\": \"{cityName}\",\"Triggers\": [\"{cityName}\"], \"X\": 0, \"Y\": 0, \"BaseRadius\": 20 }},{Environment.NewLine}";
 
 				// Use Encoding.UTF8 to protect Hebrew characters
 				File.AppendAllText(filePath, jsonEntry, Encoding.UTF8);
@@ -292,31 +311,19 @@ namespace MonitorWpf1
 			}
 		}
 
-		public void SyncWithService(List<OrefAlertsService.OrefAlert> rawAlerts)
+		public void SyncWithService(OrefAlertsService alertService)
 		{
-			var sw = System.Diagnostics.Stopwatch.StartNew();
-
-			if (rawAlerts == null) return;
 
 			// 1. Check Service Logic Speed
-			var service = new OrefAlertsService();
-			var statuses = service.GetMapStatuses(rawAlerts);
-
-			long serviceTime = sw.ElapsedMilliseconds;
-			System.Diagnostics.Debug.WriteLine($"[PERF] GetMapStatuses took: {serviceTime}ms");
-			sw.Restart();
+			var statuses = alertService.GetMapStatuses();
 
 			// 2. Check UI/Marker Creation Speed
 			int count = 0;
 			foreach (var entry in statuses)
 			{
-				MarkAlarm(entry.Key, entry.Value);
+				MarkAlarm(alertService, entry.Key, entry.Value);
 				count++;
 			}
-
-			long uiTime = sw.ElapsedMilliseconds;
-			System.Diagnostics.Debug.WriteLine($"[PERF] MarkAlarm (x{count}) took: {uiTime}ms");
-			sw.Stop();
 		}
 
 

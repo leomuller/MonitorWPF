@@ -8,15 +8,132 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using static MonitorWpf1.MapWindow;
 
+#nullable disable	//supresses nullable warnings. 
 
 public class OrefAlertsService
 {
-	private static readonly HttpClient httpClient = new HttpClient();
-	private static List<AlertGroup> prevAlerts = new List<AlertGroup>();
-	public DateTime lastAlertReceiveDate = new DateTime(2026, 1, 1);
+	private static HttpClient httpClient;
+	public DateTime lastAlertReceiveDate;
+	public Dictionary<string, MapLocation> dicMapLocations;
+	private List<MapLocation> mapLocations;
+	public List<String> missingLocations;
+	public List<OrefAlert> lastOrefAlerts;
 
-	public async Task<List<OrefAlert>> GetOrefAlertsAsync()
+	public List<AlertGroup> GroupedAlerts
+	{
+		get
+		{
+			return GroupAlerts(lastOrefAlerts);
+		}
+	}
+
+	public List<AlertGroup> GroupedFinishedAlerts
+	{
+		get
+		{
+			return GroupedAlerts
+				.Where(x => x.Category == 13)
+				.OrderByDescending(a => a.AlertDate)
+				.ToList();
+		}
+	}
+
+	public OrefAlertsService()
+	{
+		//constructor.
+		httpClient  = new HttpClient();
+		lastAlertReceiveDate = new DateTime(2026, 1, 1);
+		dicMapLocations = new Dictionary<string, MapLocation>();
+		mapLocations = new List<MapLocation>();
+		lastOrefAlerts = new List<OrefAlert>();
+		missingLocations = new List<String>();
+
+		LoadMapFiles();
+	}
+
+	private void LoadMapFiles()
+	{
+		string MapLocationsFilePath = @"C:\DevLeo\PR2025\MonitorWpf1\MonitorWpf1\Data\MapLocations.json";
+		string MissingLocationsFilePath = @"C:\DevLeo\PR2025\MonitorWpf1\MonitorWpf1\Data\MissingLocations.json";
+
+
+		//load the MapLocations
+		if (System.IO.File.Exists(MapLocationsFilePath) == true)
+		{
+			string jsonMapLocations = System.IO.File.ReadAllText(MapLocationsFilePath, Encoding.UTF8);
+			mapLocations = JsonConvert.DeserializeObject<List<MapLocation>>(jsonMapLocations);
+		}
+		else
+		{
+			System.Diagnostics.Debug.WriteLine("Failed to load dictionary JSON");
+		}
+
+
+		//load the Missing Locations (so we can log only new ones)
+		if (System.IO.File.Exists(MissingLocationsFilePath) == true)
+		{
+			string jsonMissingLocations = System.IO.File.ReadAllText(MissingLocationsFilePath, Encoding.UTF8);
+			//missingLocations = JsonConvert.DeserializeObject<List<MapLocation>>(jsonMissingLocations);
+			missingLocations = JsonConvert.DeserializeObject<List<MapLocation>>("[" + jsonMissingLocations.TrimEnd(',') + "]").Select(x => x.Name).ToList();
+
+		}
+		else
+		{
+			//no missing locations file yet, that's fine. 
+			missingLocations = new List<String>();
+		}
+
+
+		//make a dictionary for quick lookup of 'Triggers'
+		foreach (MapLocation loc in mapLocations)
+		{
+			foreach(string str in loc.Triggers)
+			{
+				if(dicMapLocations.ContainsKey(str) == false)
+				{
+					dicMapLocations.Add(str, loc);
+				}
+			}
+		}
+	}
+
+	public async Task UpdateAlerts()
+	{
+		try
+		{
+			string url = "https://www.oref.org.il/warningMessages/alert/History/AlertsHistory.json";
+			string json = await httpClient.GetStringAsync(url);
+			lastAlertReceiveDate = DateTime.Now;
+
+			if (string.IsNullOrWhiteSpace(json) || json == "[]")
+			{
+				//no alerts at all. 
+				lastOrefAlerts = new List<OrefAlert>();
+			}
+			else
+			{
+				//process the alerts:
+				lastOrefAlerts =  JsonConvert.DeserializeObject<List<OrefAlert>>(json);
+			}
+				
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine("Error fetching Oref alerts: " + ex.Message);
+			lastOrefAlerts = new List<OrefAlert>();
+			lastOrefAlerts.Add(new OrefAlert
+			{
+				Title = "error fetching data",
+				AlertDate = DateTime.Now,
+				Category = 1,
+				Location = "nowhere"
+			});
+		}
+	}
+
+	private async Task<List<OrefAlert>> GetOrefAlertsAsync()
 	{
 		try
 		{
@@ -35,38 +152,7 @@ public class OrefAlertsService
 		}
 	}
 
-	//public async Task<List<AlertGroup>> GetOrefAlertsAsync()
-	//{
-	//	try
-	//	{
-
-
-	//		string url = "https://www.oref.org.il/warningMessages/alert/History/AlertsHistory.json";
-	//		string json = await httpClient.GetStringAsync(url);
-
-	//		lastAlertReceiveDate = DateTime.Now;
-
-	//		if (json == "")
-	//		{
-	//			return new List<AlertGroup>();
-	//		}
-
-	//		var alerts = JsonConvert.DeserializeObject<List<OrefAlert>>(json);
-
-	//		// Group the alerts
-	//		var groupedAlerts = GroupAlerts(alerts, prevAlerts);
-
-	//		return groupedAlerts; // <- return groups for binding
-
-	//	}
-	//	catch (Exception ex)
-	//	{
-	//		Console.WriteLine("Error fetching Oref alerts: " + ex.Message);
-	//		return new List<AlertGroup>();
-	//	}
-	//}
-
-	public List<AlertGroup> GroupAlerts(List<OrefAlert> alerts)
+	private List<AlertGroup> GroupAlerts(List<OrefAlert> alerts)
 	{
 		if (alerts == null) return new List<AlertGroup>();
 
@@ -93,76 +179,15 @@ public class OrefAlertsService
 
 		return grouped;
 	}
+	
 
-	//public List<AlertGroup> GroupAlerts(List<OrefAlert> alerts, List<AlertGroup> lastGroups)
-	//{
-	//	DateTime lastTimestamp = (lastGroups != null && lastGroups.Any())
-	//		? lastGroups.Max(g => g.AlertDate)
-	//		: DateTime.MinValue;
-
-	//	var grouped = alerts
-	//		.GroupBy(a => new { a.AlertDate, a.Category, a.Title })
-	//		.Select(g => new AlertGroup
-	//		{
-	//			AlertDate = g.Key.AlertDate,
-	//			Category = g.Key.Category,
-	//			Title = g.Key.Title,
-	//			Locations = g.Select(a => a.Location).ToList()
-	//		})
-	//		.OrderByDescending(g => g.AlertDate)
-	//		.ToList();
-
-	//	foreach (var group in grouped)
-	//	{
-	//		group.IsNew = group.AlertDate > lastTimestamp;
-	//	}
-
-	//	return grouped;
-	//}
-
-	//old funct.
-	private Dictionary<string, AlertStatus> GetMapStatuses(List<AlertGroup> groups)
+	public Dictionary<string, AlertStatus> GetMapStatuses()
 	{
 		var statusMap = new Dictionary<string, AlertStatus>();
-
-		// 1. Map Logic: Flatten and find the "Current State" of each city
-		var latestCityStatus = groups
-			.SelectMany(g => g.Locations.Select(loc => new {
-				Name = loc,
-				Date = g.AlertDate,
-				Cat = g.Category
-			}))
-			.GroupBy(x => x.Name)
-			.Select(g => g.OrderByDescending(x => x.Date).First()); // Newest info for this city wins
-
-		// We process from oldest to newest so that the NEWEST status for a city wins
-		foreach (var group in groups.OrderBy(g => g.AlertDate))
-		{
-			AlertStatus groupStatus;
-			var ageSeconds = (DateTime.Now - group.AlertDate).TotalSeconds;
-
-			if (group.Category == 13) groupStatus = AlertStatus.Finished;
-			else if (group.Category == 14) groupStatus = AlertStatus.PreWarning;
-			else if (ageSeconds <= 90) groupStatus = AlertStatus.NewAlert;
-			else groupStatus = AlertStatus.PostAlert;
-
-			foreach (var loc in group.Locations)
-			{
-				statusMap[loc] = groupStatus;
-			}
-		}
-		return statusMap;
-	}
-
-	public Dictionary<string, AlertStatus> GetMapStatuses(List<OrefAlert> rawAlerts)
-	{
-		var statusMap = new Dictionary<string, AlertStatus>();
-		if (rawAlerts == null) return statusMap;
-
-		DateTime threshold = DateTime.Now.AddMinutes(-10);
+		DateTime threshold = DateTime.Now.AddMinutes(-100);
 
 		// Filter by time and take the LATEST event for every city
-		var latestPerCity = rawAlerts
+		var latestPerCity = lastOrefAlerts
 			.Where(a => a.AlertDate >= threshold)
 			.GroupBy(a => a.Location)
 			.Select(g => g.OrderByDescending(a => a.AlertDate).First());
@@ -172,10 +197,22 @@ public class OrefAlertsService
 			AlertStatus status;
 			var ageSeconds = (DateTime.Now - alert.AlertDate).TotalSeconds;
 
-			if (alert.Category == 13) status = AlertStatus.Finished; // Green
-			else if (alert.Category == 14) status = AlertStatus.PreWarning; // Blue
-			else if (ageSeconds <= 90) status = AlertStatus.NewAlert; // Red
-			else status = AlertStatus.PostAlert; // Orange
+			if (alert.Category == 13)
+			{
+				status = AlertStatus.Finished; // Green
+			}
+			else if (alert.Category == 14)
+			{
+				status = AlertStatus.PreWarning;// Blue
+			}
+			else if (ageSeconds <= 90)
+			{
+				status = AlertStatus.NewAlert; // Red
+			}
+			else
+			{
+				status = AlertStatus.PostAlert; // Orange
+			}
 
 			statusMap[alert.Location] = status;
 		}
@@ -270,6 +307,8 @@ public class OrefAlertsService
 
 		private void FillPriorityLocations()
 		{
+			//for the text UI, this is used to display for us important locations first. 
+
 			if (LocPrio1.Count == 0)
 			{
 				LocPrio1.Add("מודיעין מכבים רעות");

@@ -28,9 +28,6 @@ namespace MonitorWpf1
 		private readonly NewsService _newsService = new NewsService();
 		private readonly OrefAlertsService _alertService = new OrefAlertsService();
 
-		public ObservableCollection<AlertGroup> AllAlerts { get; } = new ObservableCollection<AlertGroup>();
-		public ObservableCollection<AlertGroup> FinishedAlerts { get; } = new ObservableCollection<AlertGroup>();
-
 		private DispatcherTimer updateTimer;
 		private DispatcherTimer scrollTimer;
 
@@ -64,7 +61,10 @@ namespace MonitorWpf1
 			timer_alerts.Start();
 
 			//run once:
-			//TimerAlerts_Tick(null, null);
+			TimerAlerts_Tick(null, null);
+
+			//run one time:
+			//ProcessAlertFiles.MakeMasterFile();
 
 		}
 
@@ -173,66 +173,30 @@ namespace MonitorWpf1
 
 		private async void TimerAlerts_Tick(object sender, EventArgs e)
 		{
-			var rawAlerts = await _alertService.GetOrefAlertsAsync();
+			// new way with logic in OrefAlertService:
+			await _alertService.UpdateAlerts();
 
-
-			if (rawAlerts != null && rawAlerts.Count > 0)
+			if(_alertService.lastOrefAlerts.Count == 0)
 			{
-				LabelNoData.Text = "";
-
-				// Update main alerts
-				var groupedUI = _alertService.GroupAlerts(rawAlerts);
-
-				AllAlerts.Clear();
-				foreach (var g in groupedUI.OrderByDescending(x => x.AlertDate))
-				{
-					AllAlerts.Add(g);
-				}
-
-
-				//AllAlerts.Clear();
-				//foreach (var g in groupedUI)
-				//{
-				//	AllAlerts.Add(g);
-				//}
-				//AlertsControl.ItemsSource = alertGroups.OrderByDescending(g => g.AlertDate).ToList();
-
-
-				// Update finished/go-out alerts (category 13)
-
-				//var sortedReleases = alertGroups.Where(a => a.Category == 13).OrderByDescending(a => a.AlertDate);
-				//FinishedAlerts.Clear();
-				//foreach (var g in sortedReleases)
-				//{
-				//	FinishedAlerts.Add(g);
-				//}
-
-				FinishedAlerts.Clear();
-				foreach (var g in groupedUI.Where(x => x.Category == 13).OrderByDescending(a => a.AlertDate))
-				{
-					FinishedAlerts.Add(g);
-				}
-
-				//TO be added by Gemini, check if MapWindow is open, and if it is 'push the data'
-				// Push to Map
-				if (_mapWindowInstance != null && _mapWindowInstance.IsVisible)
-				{
-					_mapWindowInstance.SyncWithService(rawAlerts);
-				}
-
-				//ReleaseLocationsControl.ItemsSource = alertGroups
-				//	.Where(g => g.Category == 13)
-				//	.OrderByDescending(g => g.AlertDate)
-				//	.ToList();
+				LabelNoData.Text = "No data.";
 			}
 			else
 			{
-				LabelNoData.Text = "No data.";
-				AllAlerts.Clear();
-				FinishedAlerts.Clear();
+				LabelNoData.Text = "";
+
+				//bind the results to the UI:
+				AlertsControl.ItemsSource = new ObservableCollection<AlertGroup>(_alertService.GroupedAlerts); ;
+				ReleaseLocationsControl.ItemsSource = new ObservableCollection<AlertGroup>(_alertService.GroupedFinishedAlerts); ;
 			}
 
-			AlertsLastUpdatedText.Text = $"Last updated: {DateTime.Now:dd/MM/yyyy HH:mm:ss}";
+			//always show the updated time:
+			AlertsLastUpdatedText.Text = $"Last updated: {_alertService.lastAlertReceiveDate:dd/MM/yyyy HH:mm:ss}";
+
+			// Push to Map
+			if (_mapWindowInstance != null && _mapWindowInstance.IsVisible)
+			{
+				_mapWindowInstance.SyncWithService(_alertService);
+			}
 		}
 
 		
