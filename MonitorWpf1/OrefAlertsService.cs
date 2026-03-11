@@ -55,8 +55,12 @@ public class OrefAlertsService
 
 	private void LoadMapFiles()
 	{
-		string MapLocationsFilePath = @"C:\DevLeo\PR2025\MonitorWpf1\MonitorWpf1\Data\MapLocations.json";
-		string MissingLocationsFilePath = @"C:\DevLeo\PR2025\MonitorWpf1\MonitorWpf1\Data\MissingLocations.json";
+		//string MapLocationsFilePath = @"C:\DevLeo\PR2025\MonitorWpf1\MonitorWpf1\Data\MapLocations.json";
+		//string MissingLocationsFilePath = @"C:\DevLeo\PR2025\MonitorWpf1\MonitorWpf1\Data\MissingLocations.json";
+
+		string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+		string MapLocationsFilePath = System.IO.Path.Combine(baseDir, "Data", "MapLocations.json");
+		string MissingLocationsFilePath = System.IO.Path.Combine(baseDir, "Data", "MissingLocations.json");
 
 
 		//load the MapLocations
@@ -179,12 +183,12 @@ public class OrefAlertsService
 
 		return grouped;
 	}
-	
+
 
 	public Dictionary<string, AlertStatus> GetMapStatuses()
 	{
 		var statusMap = new Dictionary<string, AlertStatus>();
-		DateTime threshold = DateTime.Now.AddMinutes(-100);
+		DateTime threshold = DateTime.Now.AddMinutes(-10);
 
 		// Filter by time and take the LATEST event for every city
 		var latestPerCity = lastOrefAlerts
@@ -218,6 +222,8 @@ public class OrefAlertsService
 		}
 		return statusMap;
 	}
+
+
 
 	public class OrefAlert
 	{

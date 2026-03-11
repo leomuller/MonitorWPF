@@ -9,7 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Data\MapLocations.json" />
     <None Remove="Resources\mapsisrael.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Data\MapLocations.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

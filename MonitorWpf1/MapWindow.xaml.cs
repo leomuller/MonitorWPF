@@ -162,8 +162,11 @@ namespace MonitorWpf1
 		{
 			try
 			{
-				string folderPath = @"C:\DevLeo\PR2025\MonitorWpf1\MonitorWpf1\Data\";
-				string filePath = System.IO.Path.Combine(folderPath, "MissingLocations.json");
+				//string folderPath = @"C:\DevLeo\PR2025\MonitorWpf1\MonitorWpf1\Data\";
+				//string filePath = System.IO.Path.Combine(folderPath, "MissingLocations.json");
+
+				string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+				string MissingLocationsFilePath = System.IO.Path.Combine(baseDir, "Data", "MissingLocations.json");
 
 				// Format it as a JSON object for easy copy-pasting into your main file
 				// We use \" to include quotes inside the string
@@ -184,7 +187,7 @@ namespace MonitorWpf1
 				//string jsonEntry = $"  {{ \"Name\": \"{cityName}\",\"Label\": \"{cityName}\",\"Triggers\": [\"{cityName}\"], \"X\": 0, \"Y\": 0, \"BaseRadius\": 20 }},{Environment.NewLine}";
 
 				// Use Encoding.UTF8 to protect Hebrew characters
-				File.AppendAllText(filePath, jsonEntry, Encoding.UTF8);
+				File.AppendAllText(MissingLocationsFilePath, jsonEntry, Encoding.UTF8);
 			}
 			catch (Exception ex)
 			{
