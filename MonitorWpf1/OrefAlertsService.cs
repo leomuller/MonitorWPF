@@ -265,7 +265,7 @@ public class OrefAlertsService
 
 				string extra = remaining > 0 ? $" +  עוד {remaining}" : "";
 
-				return string.Join(", ", displayed) + extra;
+				return string.Join(", ", displayed) + extra + " " + AlertDate.ToString("dd/MM HH:mm");
 			}
 		}
 
@@ -295,10 +295,26 @@ public class OrefAlertsService
 
 				var ageSeconds = (DateTime.Now - AlertDate).TotalSeconds;
 
-				if (Category == 13 && ageSeconds <= 300) return Brushes.GreenYellow;	// let out messages
-				if (Category == 14 && ageSeconds <= 600) return Brushes.CornflowerBlue;	// early warning
-				if (ageSeconds <= 90) return Brushes.OrangeRed;			// very recent
-				if (ageSeconds <= 600) return Brushes.Orange;           // slightly older
+				if (Category == 13 && ageSeconds <= 300)
+				{
+					//return Brushes.LightGreen;  // let out messages
+					return new SolidColorBrush(Colors.LightGreen) { Opacity = 0.45 };
+				}
+				if (Category == 14 && ageSeconds <= 600)
+				{
+					//return Brushes.Gold;    // early warning
+					return new SolidColorBrush(Colors.Gold) { Opacity = 0.45 };
+				}
+				if (ageSeconds <= 90)
+				{
+					//return Brushes.DarkRed;         // very recent
+					return new SolidColorBrush(Colors.DarkRed) { Opacity = 0.45 };
+				}
+				if (ageSeconds <= 600)
+				{
+					//return Brushes.DarkOrange;           // slightly older
+					return new SolidColorBrush(Colors.DarkOrange) { Opacity = 0.45 };
+				}
 				return Brushes.Silver;                                  // old 
 			}
 		}

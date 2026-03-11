@@ -17,7 +17,7 @@ namespace MonitorWpf1
 {
 	public enum AlertStatus { PreWarning, NewAlert, PostAlert, Finished, None }
 
-	public partial class MapWindow : Window
+	public partial class MapWindow : UserControl
 	{
 		private class FireAlarm
 		{
@@ -229,7 +229,7 @@ namespace MonitorWpf1
 			double showSize = radius / 30;
 			Ellipse e = new Ellipse
 			{
-				Opacity = 0.35,
+				Opacity = 0.45,
 				RenderTransformOrigin = new Point(0.5, 0.5),
 				RenderTransform = new ScaleTransform(1.0, 1.0)
 			};
@@ -255,7 +255,7 @@ namespace MonitorWpf1
 			alarm.Marker.Fill = alarm.Status switch
 			{
 				AlertStatus.PreWarning => Brushes.Gold,
-				AlertStatus.NewAlert => Brushes.Red,
+				AlertStatus.NewAlert => Brushes.DarkRed,
 				AlertStatus.PostAlert => Brushes.DarkOrange,
 				AlertStatus.Finished => Brushes.LightGreen,             //Brushes.LightGreen,
 				_ => Brushes.Gray

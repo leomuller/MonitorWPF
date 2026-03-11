@@ -9,7 +9,7 @@
         WindowStyle="SingleBorderWindow"
         Title="Monitor"
         Topmost="False"
-        Background="Black">
+        Background="Black" d:DesignHeight="800.723" d:DesignWidth="1139.77">
 
 	<Grid>
 		<!-- ===== Top-level rows ===== -->
@@ -61,24 +61,31 @@
 			</MenuItem>
 
 			<MenuItem Header="More" ItemContainerStyle="{StaticResource TopMenuStyle}">
-				<MenuItem Header="Show Map" Click="ShowMap_Click"  Style="{StaticResource SubMenuStyle}"/>
+				<MenuItem Header="Toggle Map" Click="ShowMap_Click"  Style="{StaticResource SubMenuStyle}"/>
 			</MenuItem>
-
-			
 		</Menu>
 
+		
 		<!-- ===== Main content (Left + Right panels) ===== -->
 		<Grid Grid.Row="1">
 			<!-- Column definitions -->
 			<Grid.ColumnDefinitions>
+				<!-- Left panel -->
+				<ColumnDefinition Width="355" x:Name="MapColumn" />
+				<!-- mid panel -->
 				<ColumnDefinition Width="*"/>
 				<!-- Left panel -->
-				<ColumnDefinition Width="400"/>
+				<ColumnDefinition Width="340"/>
 				<!-- Right panel -->
 			</Grid.ColumnDefinitions>
+			
+			<!-- left panel map -->
+			<Grid Grid.Column="0" >
+				<local:MapWindow x:Name="MapControl" />
+			</Grid>
 
-			<!-- ===== Left Panel (Active + Released Alerts) ===== -->
-			<Grid Grid.Column="0">
+			<!-- ===== Mid Panel (Active + Released Alerts) ===== -->
+			<Grid Grid.Column="1">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="3*"/>
 					<RowDefinition Height="1*"/>
@@ -101,11 +108,11 @@
 								</ItemsControl.ItemsPanel>
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
-										<Border Padding="10" Margin="5" CornerRadius="5" BorderThickness="1" BorderBrush="Black" Background="{Binding GroupColor}" MaxWidth="500">
+										<Border Padding="5" Margin="3" CornerRadius="5" BorderThickness="1" BorderBrush="Black" Background="{Binding GroupColor}" MaxWidth="400">
 											<VirtualizingStackPanel Orientation="Vertical">
-												<TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="16"/>
-												<TextBlock Text="{Binding AlertDate, StringFormat='dd/MM HH:mm'}"/>
-												<TextBlock Text="{Binding DisplayLocations}" FontSize="15" TextWrapping="Wrap"/>
+												<TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="14"/>
+												<!--<TextBlock Text="{Binding AlertDate, StringFormat='dd/MM HH:mm'}" />-->
+												<TextBlock Text="{Binding DisplayLocations}" FontSize="13" TextWrapping="Wrap"/>
 											</VirtualizingStackPanel>
 										</Border>
 									</DataTemplate>
@@ -124,7 +131,7 @@
 					<ItemsControl x:Name="ReleaseLocationsControl" ItemsSource="{Binding FinishedAlerts}">
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
-								<Border Padding="8" Margin="5" CornerRadius="5" BorderBrush="Black" Background="DarkSeaGreen">
+								<Border Padding="5" Margin="3" CornerRadius="5" BorderBrush="Black" Background="DarkSeaGreen">
 									<VirtualizingStackPanel Orientation="Horizontal">
 										<TextBlock Text="{Binding Title}" FontWeight="Bold"/>
 										<TextBlock Text=" - "/>
@@ -140,7 +147,7 @@
 			</Grid>
 
 			<!-- ===== Right Panel (News) ===== -->
-			<Border Grid.Column="1" BorderBrush="DarkGray" BorderThickness="1" Margin="5" Padding="8" CornerRadius="12"  Background="SlateGray">
+			<Border Grid.Column="2" BorderBrush="DarkGray" BorderThickness="1" Margin="5" Padding="8" CornerRadius="12"  Background="SlateGray">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
@@ -169,8 +176,8 @@
 										<TextBlock>
                                             <Run Text="{Binding date, StringFormat={}{0:dd/MM HH:mm}}" FontSize="14"/>
 										</TextBlock>
-										<TextBlock FontWeight="Bold" TextWrapping="Wrap" Text="{Binding title}" FontSize="18"/>
-										<TextBlock TextWrapping="Wrap" Text="{Binding text}" FontSize="16"/>
+										<TextBlock FontWeight="Bold" TextWrapping="Wrap" Text="{Binding title}" FontSize="16"/>
+										<TextBlock TextWrapping="Wrap" Text="{Binding text}" FontSize="15"/>
 										<Separator Margin="0,8,0,8"/>
 									</StackPanel>
 								</DataTemplate>

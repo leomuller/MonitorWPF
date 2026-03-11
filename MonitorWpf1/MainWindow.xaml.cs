@@ -40,7 +40,7 @@ namespace MonitorWpf1
 
 			// Initialize the news timer
 			timer_news = new DispatcherTimer();
-			timer_news.Interval = TimeSpan.FromSeconds(90); 
+			timer_news.Interval = TimeSpan.FromSeconds(150); 
 			timer_news.Tick += TimerNews_Tick;
 			timer_news.Start();
 
@@ -86,27 +86,38 @@ namespace MonitorWpf1
 
 		private void ShowMap_Click(object sender, RoutedEventArgs e)
 		{
-			// If window doesn't exist or was closed/disposed
-			if (_mapWindowInstance == null || !Application.Current.Windows.Cast<Window>().Any(x => x == _mapWindowInstance))
+			if (MapControl.Visibility == Visibility.Visible)
 			{
-				_mapWindowInstance = new MapWindow();
-
-				// Ensure that if the user clicks 'X', we just hide it instead of destroying it
-				// This keeps the JSON data and locations loaded in memory
-				_mapWindowInstance.Closing += (s, ev) =>
-				{
-					ev.Cancel = true;
-					_mapWindowInstance.Hide();
-				};
-
-				_mapWindowInstance.Show();
+				MapControl.Visibility = Visibility.Collapsed;
+				MapColumn.Width = new GridLength(0); // collapse column
 			}
 			else
 			{
-				// If it's already open (or hidden), show it and bring to front
-				_mapWindowInstance.Show();
-				_mapWindowInstance.Activate();
+				MapControl.Visibility = Visibility.Visible;
+				MapColumn.Width = new GridLength(355); // restore
 			}
+
+			//// If window doesn't exist or was closed/disposed
+			//if (_mapWindowInstance == null || !Application.Current.Windows.Cast<Window>().Any(x => x == _mapWindowInstance))
+			//{
+			//	_mapWindowInstance = new MapWindow();
+
+			//	// Ensure that if the user clicks 'X', we just hide it instead of destroying it
+			//	// This keeps the JSON data and locations loaded in memory
+			//	_mapWindowInstance.Closing += (s, ev) =>
+			//	{
+			//		ev.Cancel = true;
+			//		_mapWindowInstance.Hide();
+			//	};
+
+			//	_mapWindowInstance.Show();
+			//}
+			//else
+			//{
+			//	// If it's already open (or hidden), show it and bring to front
+			//	_mapWindowInstance.Show();
+			//	_mapWindowInstance.Activate();
+			//}
 		}
 
 		
@@ -139,15 +150,29 @@ namespace MonitorWpf1
 			if (scrollTimer == null)
 			{
 				scrollTimer = new DispatcherTimer();
-				scrollTimer.Interval = TimeSpan.FromMilliseconds(20); // adjust speed
+				scrollTimer.Interval = TimeSpan.FromMilliseconds(25); // adjust speed
 				scrollTimer.Tick += (s, ev) =>
 				{
 					if (NewsScrollViewer.ScrollableHeight == 0) return;
 
 					double offset = NewsScrollViewer.VerticalOffset + 1; // pixels per tick
+
+
+					//if (offset >= NewsScrollViewer.ScrollableHeight)
+					//{
+					//	NewsScrollViewer.ScrollToTop();
+					//}
+					
 					if (offset >= NewsScrollViewer.ScrollableHeight)
 					{
+						scrollTimer.Stop();
 						NewsScrollViewer.ScrollToTop();
+
+						_ = Task.Run(async () =>
+						{
+							await Task.Delay(TimeSpan.FromSeconds(6));
+							Application.Current.Dispatcher.Invoke(() => scrollTimer.Start());
+						});
 					}
 					else
 					{
@@ -193,9 +218,13 @@ namespace MonitorWpf1
 			AlertsLastUpdatedText.Text = $"Last updated: {_alertService.lastAlertReceiveDate:dd/MM/yyyy HH:mm:ss}";
 
 			// Push to Map
-			if (_mapWindowInstance != null && _mapWindowInstance.IsVisible)
+			//if (_mapWindowInstance != null && _mapWindowInstance.IsVisible)
+			//{
+			//	_mapWindowInstance.SyncWithService(_alertService);
+			//}
+			if (MapControl.Visibility == Visibility.Visible)
 			{
-				_mapWindowInstance.SyncWithService(_alertService);
+				MapControl.SyncWithService(_alertService);
 			}
 		}
 
