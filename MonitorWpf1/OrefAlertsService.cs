@@ -17,7 +17,8 @@ public class OrefAlertsService
 	private static HttpClient httpClient;
 	public DateTime lastAlertReceiveDate;
 	public Dictionary<string, MapLocation> dicMapLocations;
-	private List<MapLocation> mapLocations;
+	private List<MapLocation> storedMapLocations;
+	public List<MapDisplayLocation> DisplayMapLocations;
 	public List<String> missingLocations;
 	public List<OrefAlert> lastOrefAlerts;
 
@@ -46,9 +47,10 @@ public class OrefAlertsService
 		httpClient  = new HttpClient();
 		lastAlertReceiveDate = new DateTime(2026, 1, 1);
 		dicMapLocations = new Dictionary<string, MapLocation>();
-		mapLocations = new List<MapLocation>();
+		storedMapLocations = new List<MapLocation>();
 		lastOrefAlerts = new List<OrefAlert>();
 		missingLocations = new List<String>();
+		DisplayMapLocations = new List<MapDisplayLocation>();
 
 		LoadMapFiles();
 	}
@@ -67,7 +69,7 @@ public class OrefAlertsService
 		if (System.IO.File.Exists(MapLocationsFilePath) == true)
 		{
 			string jsonMapLocations = System.IO.File.ReadAllText(MapLocationsFilePath, Encoding.UTF8);
-			mapLocations = JsonConvert.DeserializeObject<List<MapLocation>>(jsonMapLocations);
+			storedMapLocations = JsonConvert.DeserializeObject<List<MapLocation>>(jsonMapLocations);
 		}
 		else
 		{
@@ -91,7 +93,7 @@ public class OrefAlertsService
 
 
 		//make a dictionary for quick lookup of 'Triggers'
-		foreach (MapLocation loc in mapLocations)
+		foreach (MapLocation loc in storedMapLocations)
 		{
 			foreach(string str in loc.Triggers)
 			{
@@ -185,8 +187,10 @@ public class OrefAlertsService
 	}
 
 
-	public Dictionary<string, AlertStatus> GetMapStatuses()
+	public void UpdateMapDisplayStatuses()
 	{
+		DisplayMapLocations.Clear();	//not sure if this is needed.
+
 		var statusMap = new Dictionary<string, AlertStatus>();
 		DateTime threshold = DateTime.Now.AddMinutes(-10);
 
@@ -196,34 +200,108 @@ public class OrefAlertsService
 			.GroupBy(a => a.Location)
 			.Select(g => g.OrderByDescending(a => a.AlertDate).First());
 
-		foreach (var alert in latestPerCity)
-		{
-			AlertStatus status;
-			var ageSeconds = (DateTime.Now - alert.AlertDate).TotalSeconds;
 
-			if (alert.Category == 13)
+		//now convert this to a list per MapLocation (includes ALT trigger names)
+		//List<MapLocation> displayLocation = new List<MapLocation>();
+		foreach (OrefAlert alert in latestPerCity) {
+			//find the area.
+			if (dicMapLocations.ContainsKey(alert.Location))
 			{
-				status = AlertStatus.Finished; // Green
-			}
-			else if (alert.Category == 14)
-			{
-				status = AlertStatus.PreWarning;// Blue
-			}
-			else if (ageSeconds <= 90)
-			{
-				status = AlertStatus.NewAlert; // Red
+				MapLocation curMapLocation = dicMapLocations[alert.Location];
+
+				Brush curBrush = Brushes.White;
+				var ageSeconds = (DateTime.Now - alert.AlertDate).TotalSeconds;
+
+				if (alert.Category == 13)
+				{
+					//return Brushes.LightGreen;  // let out messages
+					curBrush = new SolidColorBrush(Colors.LightGreen) { Opacity = 0.45 };
+				}
+				else if (alert.Category == 14)
+				{
+					//return Brushes.Gold;    // early warning
+					curBrush = new SolidColorBrush(Colors.Gold) { Opacity = 0.45 };
+				}
+				else if (ageSeconds <= 90)
+				{
+					//return Brushes.DarkRed;         // very recent
+					curBrush = new SolidColorBrush(Colors.DarkRed) { Opacity = 0.45 };
+				}
+				else if (ageSeconds <= 600)
+				{
+					//return Brushes.DarkOrange;           // slightly older
+					curBrush = new SolidColorBrush(Colors.DarkOrange) { Opacity = 0.45 };
+				}
+
+				MapDisplayLocation curMapDisplayLocation = new MapDisplayLocation
+				{
+					BaseLocation = curMapLocation,
+					DisplayColorBrush = curBrush
+				};
+
+				//check if it alread is in the list to show on map:
+				if (DisplayMapLocations.Contains(curMapDisplayLocation) == false)
+				{
+					DisplayMapLocations.Add(curMapDisplayLocation);
+				}
+				else
+				{
+					//it is alread showing (maybe with a different color) so no point showing it again.
+					//nothing for now. 
+				}
+
 			}
 			else
 			{
-				status = AlertStatus.PostAlert; // Orange
+				//does not have the location, so it should be logged. 
+				//need to be added:
+				missingLocations.Add(alert.Location); //to list in this app.
+				LogMissingCity(alert.Location);
 			}
 
-			statusMap[alert.Location] = status;
+			//if the area not in list yet, add it. 
 		}
-		return statusMap;
+
+		
 	}
 
 
+	private void LogMissingCity(string cityName)
+	{
+		try
+		{
+			//string folderPath = @"C:\DevLeo\PR2025\MonitorWpf1\MonitorWpf1\Data\";
+			//string filePath = System.IO.Path.Combine(folderPath, "MissingLocations.json");
+
+			string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+			string MissingLocationsFilePath = System.IO.Path.Combine(baseDir, "Data", "MissingLocations.json");
+
+			// Format it as a JSON object for easy copy-pasting into your main file
+			// We use \" to include quotes inside the string
+
+			var entry = new
+			{
+				Name = cityName,
+				Label = cityName,
+				Triggers = new[] { cityName },
+				X = 0,
+				Y = 0,
+				BaseRadius = 20
+			};
+
+			// serialize single entry
+			string jsonEntry = JsonConvert.SerializeObject(entry) + "," + Environment.NewLine;
+
+			//string jsonEntry = $"  {{ \"Name\": \"{cityName}\",\"Label\": \"{cityName}\",\"Triggers\": [\"{cityName}\"], \"X\": 0, \"Y\": 0, \"BaseRadius\": 20 }},{Environment.NewLine}";
+
+			// Use Encoding.UTF8 to protect Hebrew characters
+			System.IO.File.AppendAllText(MissingLocationsFilePath, jsonEntry, Encoding.UTF8);
+		}
+		catch (Exception ex)
+		{
+			System.Diagnostics.Debug.WriteLine($"Could not log: {ex.Message}");
+		}
+	}
 
 	public class OrefAlert
 	{
@@ -301,22 +379,22 @@ public class OrefAlertsService
 
 				var ageSeconds = (DateTime.Now - AlertDate).TotalSeconds;
 
-				if (Category == 13 && ageSeconds <= 300)
+				if (Category == 13)
 				{
 					//return Brushes.LightGreen;  // let out messages
 					return new SolidColorBrush(Colors.LightGreen) { Opacity = 0.45 };
 				}
-				if (Category == 14 && ageSeconds <= 600)
+				else if (Category == 14)
 				{
 					//return Brushes.Gold;    // early warning
 					return new SolidColorBrush(Colors.Gold) { Opacity = 0.45 };
 				}
-				if (ageSeconds <= 90)
+				else if (ageSeconds <= 90)
 				{
 					//return Brushes.DarkRed;         // very recent
 					return new SolidColorBrush(Colors.DarkRed) { Opacity = 0.45 };
 				}
-				if (ageSeconds <= 600)
+				else if (ageSeconds <= 600)
 				{
 					//return Brushes.DarkOrange;           // slightly older
 					return new SolidColorBrush(Colors.DarkOrange) { Opacity = 0.45 };

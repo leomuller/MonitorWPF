@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static MonitorWpf1.MapWindow;
 
 namespace MonitorWpf1
 {
@@ -26,7 +28,6 @@ namespace MonitorWpf1
 			public double MapX { get; set; }
 			public double MapY { get; set; }
 			public double BaseRadius { get; set; } 
-			public AlertStatus Status { get; set; }
 			public Ellipse Marker { get; set; }
 		}
 
@@ -40,23 +41,22 @@ namespace MonitorWpf1
 			public List<string> Triggers { get; set; }
 		}
 
-		private List<FireAlarm> _alarms = new List<FireAlarm>();
+
+		public class MapDisplayLocation
+		{
+			public MapLocation BaseLocation { get; set; }
+			public Brush DisplayColorBrush { get; set; } = Brushes.White;
+		}
+
 		private const double BaseRadius = 25.0; // Radius at 100% map scale
-		//private readonly Dictionary<string, MapLocation> _locationRegistry = new Dictionary<string, MapLocation>();
-		private HashSet<string> _loggedMissingCities = new HashSet<string>();
-		//private readonly Dictionary<string, MapLocation> _triggerCache = new Dictionary<string, MapLocation>();
 
 		public MapWindow()
 		{
 			InitializeComponent();
 			MapImage.SizeChanged += (s, e) => UpdateAllPositions();
 
-			//LoadLocationsFromJson(@"C:\DevLeo\PR2025\MonitorWpf1\MonitorWpf1\Data\MapLocations.json");
-
-			//MarkAlarm("נהריה", AlertStatus.NewAlert);
-
-
 			return;
+
 			//rest below is for manual load.
 
 			//try
@@ -77,162 +77,38 @@ namespace MonitorWpf1
 		}
 
 		
-		//private void LoadLocationsFromJson(string filePath)
-		//{
-		//	if (!File.Exists(filePath)) return;
+		
 
-		//	try
-		//	{
-		//		string json = File.ReadAllText(filePath, Encoding.UTF8);
-		//		var list = JsonConvert.DeserializeObject<List<MapLocation>>(json);
-
-		//		_locationRegistry.Clear();
-		//		foreach (var item in list)
-		//		{
-		//			_locationRegistry[item.Name] = item;
-
-		//			// Build the fast-lookup cache
-		//			if (item.Triggers != null)
-		//			{
-		//				foreach (var t in item.Triggers)
-		//					_triggerCache[t.Trim()] = item;
-		//			}
-		//		}
-
-
-		//		//System.Diagnostics.Debug.WriteLine($"Loaded {_locationRegistry.Count} cities from JSON.");
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		System.Diagnostics.Debug.WriteLine($"Failed to load dictionary JSON: {ex.Message}");
-		//	}
-		//}
-
-		public void MarkAlarm(OrefAlertsService alertService, string locName, AlertStatus status)
+		
+		
+		public void UpdateAlarmOnMap(MapDisplayLocation loc)
 		{
-
-			// Optional: Clear UI before processing new update
-			//OverlayCanvas.Children.Clear();
-			//_alarms.Clear();
-
-			//check if our map locations have this location name:
-			//TBD - this can create the same alarm multiple times for the same spot (with alternative name), we should prevent that. 
-			if(alertService.dicMapLocations.ContainsKey(locName))
+			FireAlarm alarm = new FireAlarm
 			{
-				MapLocation markLocation = alertService.dicMapLocations[locName];
-				UpdateAlarm(markLocation.Name, markLocation.X, markLocation.Y, status, markLocation.BaseRadius, markLocation.Label);
-			}
-			else
-			{
-				//log missing city 
-				//TBD
-				if(alertService.missingLocations.Contains(locName) == false)
-				{
-					//need to be added:
-					alertService.missingLocations.Add(locName); //to list in this app.
-					LogMissingCity(locName);
-				}
-			}
+				ID = loc.BaseLocation.Name,
+				Label = loc.BaseLocation.Label,
+				MapX = loc.BaseLocation.X,
+				MapY = loc.BaseLocation.Y,
+				BaseRadius = loc.BaseLocation.BaseRadius
+			};
 
-
-			//private Dictionary<string, MapLocation> dicMapLocations;
-			//private List<MapLocation> mapLocations;
-			//private List<MapLocation> missingLocations;
-
-
-			//if (_triggerCache.TryGetValue(locName, out var loc))
-			//{
-			//	UpdateAlarm(loc.Name, loc.X, loc.Y, status, loc.BaseRadius, loc.Label);
-			//}
-			//else
-			//{
-			//	// Only log it if we haven't already logged it during this session
-			//	if (!_loggedMissingCities.Contains(locName))
-			//	{
-			//		LogMissingCity(locName);
-			//		_loggedMissingCities.Add(locName);
-
-			//		// Also keep the debug line so you see it in real-time
-			//		//System.Diagnostics.Debug.WriteLine($"MISSING CITY LOGGED: {locName}");
-			//	}
-			//}
-		}
-
-		private void LogMissingCity(string cityName)
-		{
-			try
-			{
-				//string folderPath = @"C:\DevLeo\PR2025\MonitorWpf1\MonitorWpf1\Data\";
-				//string filePath = System.IO.Path.Combine(folderPath, "MissingLocations.json");
-
-				string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-				string MissingLocationsFilePath = System.IO.Path.Combine(baseDir, "Data", "MissingLocations.json");
-
-				// Format it as a JSON object for easy copy-pasting into your main file
-				// We use \" to include quotes inside the string
-
-				var entry = new
-				{
-					Name = cityName,
-					Label = cityName,
-					Triggers = new[] { cityName },
-					X = 0,
-					Y = 0,
-					BaseRadius = 20
-				};
-
-				// serialize single entry
-				string jsonEntry = JsonConvert.SerializeObject(entry) + "," + Environment.NewLine;
-
-				//string jsonEntry = $"  {{ \"Name\": \"{cityName}\",\"Label\": \"{cityName}\",\"Triggers\": [\"{cityName}\"], \"X\": 0, \"Y\": 0, \"BaseRadius\": 20 }},{Environment.NewLine}";
-
-				// Use Encoding.UTF8 to protect Hebrew characters
-				File.AppendAllText(MissingLocationsFilePath, jsonEntry, Encoding.UTF8);
-			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine($"Could not log: {ex.Message}");
-			}
-		}
-		public void UpdateAlarm(string id, double x, double y, AlertStatus status, double baseRadius, string label)
-		{
-			var alarm = _alarms.FirstOrDefault(a => a.ID == id);
-
-			if (alarm == null)
-			{
-				// New Alarm: Store the baseRadius so we can scale it later
-				alarm = new FireAlarm
-				{
-					ID = id,
-					Label = label,
-					MapX = x,
-					MapY = y,
-					Status = status,
-					BaseRadius = baseRadius
-				};
-				alarm.Marker = CreateMarker(label, baseRadius);
-				_alarms.Add(alarm);
-				OverlayCanvas.Children.Add(alarm.Marker);
-			}
-			else
-			{
-				// Existing Alarm: Just update the status/position
-				alarm.MapX = x;
-				alarm.MapY = y;
-				alarm.Status = status;
-				alarm.BaseRadius = baseRadius;
-			}
-
-			UpdateMarkerVisual(alarm);
+			alarm.Marker = CreateMarker(loc.BaseLocation.Label, loc.BaseLocation.BaseRadius, loc.DisplayColorBrush);
+			OverlayCanvas.Children.Add(alarm.Marker);
 			PositionMarker(alarm);
+
+			//Debug.WriteLine("Mark area {0} with color {1}", loc.BaseLocation.Name, loc.DisplayColorBrush.ToString());
 		}
 
-		private Ellipse CreateMarker(string labelText, double radius)
+		private Ellipse CreateMarker(string labelText, double radius, Brush fillBrush)
 		{
 			double showSize = radius / 30;
+
+			Brush markerBrush = fillBrush.Clone();
+			markerBrush.Opacity = 0.45;
+
 			Ellipse e = new Ellipse
 			{
-				Opacity = 0.45,
+				Fill = markerBrush,
 				RenderTransformOrigin = new Point(0.5, 0.5),
 				RenderTransform = new ScaleTransform(1.0, 1.0)
 			};
@@ -252,22 +128,13 @@ namespace MonitorWpf1
 			return e;
 		}
 
-		private void UpdateMarkerVisual(FireAlarm alarm)
-		{
-			// Set Color based on the Enum
-			alarm.Marker.Fill = alarm.Status switch
-			{
-				AlertStatus.PreWarning => Brushes.Gold,
-				AlertStatus.NewAlert => Brushes.DarkRed,
-				AlertStatus.PostAlert => Brushes.DarkOrange,
-				AlertStatus.Finished => Brushes.LightGreen,             //Brushes.LightGreen,
-				_ => Brushes.Gray
-			};
-		}
+		
 
 		private void UpdateAllPositions()
 		{
-			foreach (var alarm in _alarms) PositionMarker(alarm);
+			//TBD think how this can be done.
+			//foreach (var alarm in _alarms) PositionMarker(alarm);
+
 		}
 
 		private void PositionMarker(FireAlarm alarm)
@@ -317,14 +184,17 @@ namespace MonitorWpf1
 		public void SyncWithService(OrefAlertsService alertService)
 		{
 
-			// 1. Check Service Logic Speed
-			var statuses = alertService.GetMapStatuses();
+			// update what needs to be displayed.
+			alertService.UpdateMapDisplayStatuses();
 
-			// 2. Check UI/Marker Creation Speed
+			//clear existing alarms.
+			OverlayCanvas.Children.Clear();
+
+			// Check UI/Marker Creation Speed
 			int count = 0;
-			foreach (var entry in statuses)
+			foreach (var entry in alertService.DisplayMapLocations)
 			{
-				MarkAlarm(alertService, entry.Key, entry.Value);
+				UpdateAlarmOnMap(entry);
 				count++;
 			}
 		}
