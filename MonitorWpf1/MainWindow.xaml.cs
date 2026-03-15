@@ -40,7 +40,7 @@ namespace MonitorWpf1
 
 			// Initialize the news timer
 			timer_news = new DispatcherTimer();
-			timer_news.Interval = TimeSpan.FromSeconds(150); 
+			timer_news.Interval = TimeSpan.FromSeconds(120); 
 			timer_news.Tick += TimerNews_Tick;
 			timer_news.Start();
 
@@ -125,7 +125,7 @@ namespace MonitorWpf1
 		private async void TimerNews_Tick(object sender, EventArgs e)
 		{
 			var newsItems = await _newsService.GetYnetNewsAsync();
-			NewsItemsControl.ItemsSource = newsItems.Take(30).ToList();
+			NewsItemsControl.ItemsSource = newsItems.Take(18).ToList();	//30
 
 
 			lastNewsFetchTime = DateTime.Now;
@@ -150,7 +150,7 @@ namespace MonitorWpf1
 			if (scrollTimer == null)
 			{
 				scrollTimer = new DispatcherTimer();
-				scrollTimer.Interval = TimeSpan.FromMilliseconds(25); // adjust speed
+				scrollTimer.Interval = TimeSpan.FromMilliseconds(25); // adjust speed 25
 				scrollTimer.Tick += (s, ev) =>
 				{
 					if (NewsScrollViewer.ScrollableHeight == 0) return;
@@ -165,14 +165,14 @@ namespace MonitorWpf1
 					
 					if (offset >= NewsScrollViewer.ScrollableHeight)
 					{
-						scrollTimer.Stop();
+						//scrollTimer.Stop();
 						NewsScrollViewer.ScrollToTop();
 
-						_ = Task.Run(async () =>
-						{
-							await Task.Delay(TimeSpan.FromSeconds(6));
-							Application.Current.Dispatcher.Invoke(() => scrollTimer.Start());
-						});
+						//_ = Task.Run(async () =>
+						//{
+						//	await Task.Delay(TimeSpan.FromSeconds(4));
+						//	Application.Current.Dispatcher.Invoke(() => scrollTimer.Start());
+						//});
 					}
 					else
 					{
@@ -183,7 +183,19 @@ namespace MonitorWpf1
 				// Optional: delay first scroll
 				_ = Task.Run(async () =>
 				{
-					await Task.Delay(TimeSpan.FromSeconds(8));
+					await Task.Delay(TimeSpan.FromSeconds(6));
+					Application.Current.Dispatcher.Invoke(() => scrollTimer.Start());
+				});
+			}
+			else
+			{
+				//timer already exists. reloaded, so pause again:
+				scrollTimer.Stop();
+				NewsScrollViewer.ScrollToTop();
+
+				_ = Task.Run(async () =>
+				{
+					await Task.Delay(TimeSpan.FromSeconds(6));
 					Application.Current.Dispatcher.Invoke(() => scrollTimer.Start());
 				});
 			}
