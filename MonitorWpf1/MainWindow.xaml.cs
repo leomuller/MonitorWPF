@@ -13,7 +13,7 @@ using System.Windows.Threading;
 using static OrefAlertsService;
 
 namespace MonitorWpf1
-{
+{	
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>

@@ -147,7 +147,7 @@
 			</Grid>
 
 			<!-- ===== Right Panel (News) ===== -->
-			<Border Grid.Column="2" BorderBrush="DarkGray" BorderThickness="1" Margin="5" Padding="8" CornerRadius="12"  Background="SlateGray">
+			<Border Grid.Column="2" BorderBrush="DarkGray" BorderThickness="1" Margin="5" Padding="8" CornerRadius="12"  Background="Silver">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>

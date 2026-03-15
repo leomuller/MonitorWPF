@@ -46,6 +46,7 @@ namespace MonitorWpf1
 		{
 			public MapLocation BaseLocation { get; set; }
 			public Brush DisplayColorBrush { get; set; } = Brushes.White;
+			public int ZindexNum { get; set; } = 10;
 		}
 
 		private const double BaseRadius = 25.0; // Radius at 100% map scale
@@ -53,7 +54,10 @@ namespace MonitorWpf1
 		public MapWindow()
 		{
 			InitializeComponent();
+			PaintMainPoints();
 			MapImage.SizeChanged += (s, e) => UpdateAllPositions();
+
+
 
 			return;
 
@@ -77,7 +81,53 @@ namespace MonitorWpf1
 		}
 
 		
+		private void PaintMainPoints()
+		{
+			Ellipse dotModiin = new Ellipse
+			{
+				Width = 8, 
+				Height = 8,
+				Fill = Brushes.Transparent,
+				Stroke = Brushes.Black,
+				StrokeThickness = 1,
+				IsHitTestVisible = false
+			};
+
+			Ellipse dotTelAviv = new Ellipse
+			{
+				Width = 8,
+				Height = 8,
+				Fill = Brushes.Transparent,
+				Stroke = Brushes.Black,
+				StrokeThickness = 1,
+				IsHitTestVisible = false
+			};
+
+			Ellipse dotJerusalem = new Ellipse
+			{
+				Width = 8,
+				Height = 8,
+				Fill = Brushes.Transparent,
+				Stroke = Brushes.Black,
+				StrokeThickness = 1,
+				IsHitTestVisible = false
+			};
+
+			// Add to canvas
+			PointsCanvas.Children.Add(dotModiin);
+			PointsCanvas.Children.Add(dotTelAviv);
+			PointsCanvas.Children.Add(dotJerusalem);
+
+			Canvas.SetLeft(dotModiin, 160);
+			Canvas.SetTop(dotModiin, 348);
+
+			Canvas.SetLeft(dotTelAviv, 114);
+			Canvas.SetTop(dotTelAviv, 302);
+
+			Canvas.SetLeft(dotJerusalem, 201);
+			Canvas.SetTop(dotJerusalem, 375);
 		
+		}
 
 		
 		
@@ -96,7 +146,7 @@ namespace MonitorWpf1
 			OverlayCanvas.Children.Add(alarm.Marker);
 			PositionMarker(alarm);
 
-			//Debug.WriteLine("Mark area {0} with color {1}", loc.BaseLocation.Name, loc.DisplayColorBrush.ToString());
+			Debug.WriteLine("Mark area {0} with color {1} zindex {2} opacity {3}", loc.BaseLocation.Name, loc.DisplayColorBrush.ToString(), loc.ZindexNum, loc.DisplayColorBrush.Opacity);
 		}
 
 		private Ellipse CreateMarker(string labelText, double radius, Brush fillBrush)
@@ -192,7 +242,7 @@ namespace MonitorWpf1
 
 			// Check UI/Marker Creation Speed
 			int count = 0;
-			foreach (var entry in alertService.DisplayMapLocations)
+			foreach (var entry in alertService.DisplayMapLocations.OrderBy(entry => entry.ZindexNum))
 			{
 				UpdateAlarmOnMap(entry);
 				count++;

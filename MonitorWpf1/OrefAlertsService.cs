@@ -211,43 +211,60 @@ public class OrefAlertsService
 
 				Brush curBrush = Brushes.White;
 				var ageSeconds = (DateTime.Now - alert.AlertDate).TotalSeconds;
+				int curZindex = 25;
 
 				if (alert.Category == 13)
 				{
 					//return Brushes.LightGreen;  // let out messages
 					curBrush = new SolidColorBrush(Colors.LightGreen) { Opacity = 0.45 };
+					curZindex = 5;
 				}
 				else if (alert.Category == 14)
 				{
 					//return Brushes.Gold;    // early warning
 					curBrush = new SolidColorBrush(Colors.Gold) { Opacity = 0.45 };
+					curZindex = 20;
 				}
 				else if (ageSeconds <= 90)
 				{
 					//return Brushes.DarkRed;         // very recent
 					curBrush = new SolidColorBrush(Colors.DarkRed) { Opacity = 0.45 };
+					curZindex = 60;
 				}
 				else if (ageSeconds <= 600)
 				{
 					//return Brushes.DarkOrange;           // slightly older
 					curBrush = new SolidColorBrush(Colors.DarkOrange) { Opacity = 0.45 };
+					curZindex = 40;
 				}
 
 				MapDisplayLocation curMapDisplayLocation = new MapDisplayLocation
 				{
 					BaseLocation = curMapLocation,
-					DisplayColorBrush = curBrush
+					DisplayColorBrush = curBrush,
+					ZindexNum = curZindex
 				};
 
-				//check if it alread is in the list to show on map:
-				if (DisplayMapLocations.Contains(curMapDisplayLocation) == false)
+				//this wasn't working, since it looks for that specific object, not the values.
+				////check if it alread is in the list to show on map:
+				//if (DisplayMapLocations.Contains(curMapDisplayLocation) == false)
+				//{
+				//	DisplayMapLocations.Add(curMapDisplayLocation);
+				//}
+				//else
+				//{
+				//	//it is alread showing (maybe with a different color) so no point showing it again.
+				//	//nothing for now. 
+				//}
+
+				// "Only add if there isn't ALREADY an entry with this Name AND this Status/ZIndex"
+				bool alreadyShown = DisplayMapLocations.Any(d =>
+					d.BaseLocation.Name == curMapDisplayLocation.BaseLocation.Name &&
+					d.ZindexNum == curMapDisplayLocation.ZindexNum);
+
+				if (alreadyShown == false)
 				{
 					DisplayMapLocations.Add(curMapDisplayLocation);
-				}
-				else
-				{
-					//it is alread showing (maybe with a different color) so no point showing it again.
-					//nothing for now. 
 				}
 
 			}
@@ -392,12 +409,12 @@ public class OrefAlertsService
 				else if (ageSeconds <= 90)
 				{
 					//return Brushes.DarkRed;         // very recent
-					return new SolidColorBrush(Colors.DarkRed) { Opacity = 0.45 };
+					return new SolidColorBrush(Colors.Red) { Opacity = 0.45 };
 				}
 				else if (ageSeconds <= 600)
 				{
 					//return Brushes.DarkOrange;           // slightly older
-					return new SolidColorBrush(Colors.DarkOrange) { Opacity = 0.45 };
+					return new SolidColorBrush(Colors.Orange) { Opacity = 0.45 };
 				}
 				return Brushes.Silver;                                  // old 
 			}

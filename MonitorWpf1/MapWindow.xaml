@@ -19,6 +19,15 @@
                     Height="{Binding ElementName=MapImage, Path=ActualHeight}"
                     HorizontalAlignment="Center" 
                     VerticalAlignment="Center"/>
+			
+			<Canvas x:Name="PointsCanvas"
+                IsHitTestVisible="False" Panel.ZIndex="500"
+                Width="{Binding ElementName=MapImage, Path=ActualWidth}"
+                Height="{Binding ElementName=MapImage, Path=ActualHeight}"
+				HorizontalAlignment="Center" 
+                VerticalAlignment="Center"
+					/>
+
 		</Grid>
 	</Border>
 </UserControl>
